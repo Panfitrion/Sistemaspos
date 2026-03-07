@@ -14,23 +14,20 @@ input,select,textarea{user-select:text;-webkit-user-select:text;font-family:inhe
 ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
 #app{display:flex;height:100%;width:100%;overflow:hidden;position:fixed;top:0;left:0;right:0;bottom:0}
 
-/* SIDEBAR */
 .sidebar{width:62px;background:linear-gradient(180deg,#0f172a,#1e293b);display:flex;flex-direction:column;align-items:center;padding:6px 0;gap:1px;flex-shrink:0;z-index:10}
 .sidebar .logo{font-size:16px;font-weight:800;color:#818cf8;margin:2px 0 2px;letter-spacing:-1px}
 .sidebar-clock{font-size:9px;color:#94a3b8;text-align:center;margin-bottom:4px;line-height:1.3;font-weight:600}
-.sidebar-clock .clock-time{font-size:14px;color:#e0e7ff;font-weight:800;letter-spacing:0.5px}
+.sidebar-clock .clock-time{font-size:14px;color:#e0e7ff;font-weight:800;letter-spacing:.5px}
 .sidebar-clock .clock-date{font-size:8px;color:#64748b;margin-top:1px}
 .nav-btn{width:54px;padding:7px 0;border:none;background:transparent;color:#94a3b8;border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9px;font-weight:600;transition:.2s}
 .nav-btn .icon{font-size:18px}
 .nav-btn.active{background:#334155;color:#818cf8}
 .nav-btn:active{transform:scale(.93)}
 
-/* DAY BANNER */
 .day-changed-banner{position:fixed;top:0;left:62px;right:0;background:linear-gradient(135deg,#6366f1,#818cf8);color:#fff;padding:8px 14px;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:space-between;z-index:100;box-shadow:0 4px 20px rgba(99,102,241,.4);animation:slideDown .4s}
 .day-changed-banner button{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;padding:4px 12px;border-radius:6px;font-weight:700;font-size:11px;cursor:pointer}
 @keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
 
-/* MAIN */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 .view{flex:1;display:none;overflow:hidden}
 .view.active{display:flex}
@@ -79,27 +76,32 @@ input,select,textarea{user-select:text;-webkit-user-select:text;font-family:inhe
 .btn-primary{background:#6366f1;color:#fff}
 .btn-success{background:#10b981;color:#fff}
 .btn-danger{background:#ef4444;color:#fff}
+.btn-warning{background:#f59e0b;color:#fff}
 .btn-outline{background:#fff;border:2px solid #e2e8f0;color:#1e293b}
 .btn-sm{padding:6px 12px;font-size:11px}
-.btn:disabled{opacity:.5;pointer-events:none}
+.btn:disabled{opacity:.4;pointer-events:none}
 
 /* PAYMENT */
-.pay-screen{flex:1;display:flex;align-items:center;justify-content:center;padding:12px;background:#f8fafc;overflow-y:auto}
-.pay-box{background:#fff;border-radius:16px;padding:20px;width:100%;max-width:420px;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.pay-screen{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:12px;background:#f8fafc;overflow-y:auto}
+.pay-box{background:#fff;border-radius:16px;padding:16px;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(0,0,0,.08);margin-top:8px}
 .pay-title{text-align:center;font-size:12px;color:#64748b;margin-bottom:2px}
-.pay-amount{text-align:center;font-size:28px;font-weight:800;color:#1e293b;margin-bottom:14px}
-.pay-methods{display:flex;gap:8px;margin-bottom:14px}
+.pay-amount{text-align:center;font-size:28px;font-weight:800;color:#1e293b;margin-bottom:12px}
+.pay-methods{display:flex;gap:8px;margin-bottom:12px}
 .pay-method{flex:1;padding:10px;border:2px solid #e2e8f0;border-radius:10px;text-align:center;cursor:pointer;font-weight:600;font-size:12px;transition:.2s;background:#fff}
 .pay-method.active{border-color:#6366f1;background:#eef2ff;color:#6366f1}
 .pay-method:active{transform:scale(.96)}
-.numpad-display{background:#f1f5f9;border-radius:10px;padding:10px;text-align:right;font-size:26px;font-weight:800;margin-bottom:8px;min-height:46px;display:flex;align-items:center;justify-content:flex-end;color:#1e293b}
+.numpad-display{background:#f1f5f9;border-radius:10px;padding:10px;text-align:right;font-size:24px;font-weight:800;margin-bottom:8px;min-height:44px;display:flex;align-items:center;justify-content:flex-end;color:#1e293b;border:2px solid transparent;transition:.2s}
+.numpad-display.active-field{border-color:#6366f1;background:#eef2ff}
+.numpad-display .nd-label{font-size:10px;color:#94a3b8;font-weight:600;margin-right:auto;text-transform:uppercase}
 .quick-amounts{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}
 .quick-btn{flex:1;min-width:50px;padding:7px 4px;border:2px solid #e2e8f0;border-radius:8px;background:#fff;font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:.2s}
 .quick-btn:active{transform:scale(.95);border-color:#6366f1}
-.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:10px}
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px}
 .numpad button{padding:12px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;font-size:18px;font-weight:700;cursor:pointer;transition:.1s}
 .numpad button:active{background:#6366f1;color:#fff;transform:scale(.95)}
-.numpad .key-c{color:#ef4444}
+.numpad .key-c{color:#ef4444;font-size:13px;font-weight:800}
+.numpad .key-clear{grid-column:1/-1;background:#fef2f2;color:#ef4444;font-size:13px;font-weight:700;padding:8px;border:1px solid #fecaca}
+.numpad .key-clear:active{background:#ef4444;color:#fff}
 .pay-actions{display:flex;gap:8px}
 .pay-actions .btn{flex:1}
 
@@ -131,15 +133,26 @@ input,select,textarea{user-select:text;-webkit-user-select:text;font-family:inhe
 .denomination{position:relative;display:inline-flex}
 
 /* MANUAL */
-.manual-view{padding:12px;display:flex;align-items:center;justify-content:center;overflow-y:auto}
-.manual-box{background:#fff;border-radius:16px;padding:20px;width:100%;max-width:440px;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.manual-view{padding:12px;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto}
+.manual-box{background:#fff;border-radius:16px;padding:16px;width:100%;max-width:420px;box-shadow:0 4px 24px rgba(0,0,0,.08);margin-top:8px}
+.manual-box h2{font-size:15px;margin-bottom:10px}
 .form-label{font-size:10px;font-weight:700;color:#64748b;margin-bottom:4px;display:block;text-transform:uppercase;letter-spacing:.5px}
 .form-input{width:100%;padding:8px 10px;border:2px solid #e2e8f0;border-radius:8px;font-size:13px;background:#f8fafc;margin-bottom:10px;font-family:inherit}
 .form-input:focus{outline:none;border-color:#6366f1}
+.step-indicator{display:flex;align-items:center;gap:6px;margin-bottom:12px;font-size:11px;font-weight:600;color:#94a3b8}
+.step-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;background:#e2e8f0;color:#94a3b8}
+.step-dot.active{background:#6366f1;color:#fff}
+.step-dot.done{background:#10b981;color:#fff}
+.step-line{flex:0 0 30px;height:2px;background:#e2e8f0}
+.step-line.done{background:#10b981}
+.man-total-badge{text-align:center;padding:10px;background:linear-gradient(135deg,#eef2ff,#e0e7ff);border-radius:10px;margin-bottom:12px}
+.man-total-badge .mtb-label{font-size:10px;color:#6366f1;font-weight:700;text-transform:uppercase}
+.man-total-badge .mtb-amount{font-size:24px;font-weight:800;color:#4338ca}
+.man-total-badge .mtb-desc{font-size:10px;color:#64748b;margin-top:2px}
 
 /* WITHDRAWAL */
-.wd-view{padding:12px;display:flex;align-items:center;justify-content:center;overflow-y:auto}
-.wd-box{background:#fff;border-radius:16px;padding:20px;width:100%;max-width:440px;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.wd-view{padding:12px;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto}
+.wd-box{background:#fff;border-radius:16px;padding:16px;width:100%;max-width:420px;box-shadow:0 4px 24px rgba(0,0,0,.08);margin-top:8px}
 .reason-grid{display:flex;gap:8px;margin-bottom:14px}
 .reason-btn{flex:1;padding:12px 8px;border:2px solid #e2e8f0;border-radius:12px;background:#fff;text-align:center;cursor:pointer;transition:.2s}
 .reason-btn .r-icon{font-size:24px;margin-bottom:2px}
@@ -191,9 +204,6 @@ input,select,textarea{user-select:text;-webkit-user-select:text;font-family:inhe
 .csv-result.success{background:#dcfce7;color:#166534;border:1px solid #bbf7d0}
 .csv-result.error{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
 .csv-result .close-result{margin-left:auto;cursor:pointer;font-size:14px;opacity:.6}
-.csv-info{padding:8px 12px;margin:0 8px 8px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;font-size:10px;color:#1e40af;line-height:1.5}
-.csv-info b{font-weight:800}
-.csv-info code{background:#dbeafe;padding:1px 4px;border-radius:3px;font-family:monospace;font-size:9px}
 
 /* REPORTS */
 .rpt-view{display:flex;flex-direction:column;height:100%}
@@ -215,9 +225,7 @@ input,select,textarea{user-select:text;-webkit-user-select:text;font-family:inhe
 .rpt-kpi .kpi-label{font-size:9px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:2px}
 .rpt-kpi .kpi-value{font-size:15px;font-weight:800}
 .rpt-kpi .kpi-sub{font-size:10px;margin-top:1px}
-.kpi-up{color:#10b981}
-.kpi-down{color:#ef4444}
-.kpi-neutral{color:#94a3b8}
+.kpi-up{color:#10b981}.kpi-down{color:#ef4444}.kpi-neutral{color:#94a3b8}
 .rpt-charts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
 .chart-box{background:#fff;border-radius:10px;padding:10px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
 .chart-title{font-size:11px;font-weight:700;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
@@ -266,14 +274,12 @@ input,select,textarea{user-select:text;-webkit-user-select:text;font-family:inhe
 .donut-legend .dl-item{display:flex;align-items:center;gap:4px}
 .donut-legend .dl-dot{width:8px;height:8px;border-radius:2px}
 
-/* SUCCESS */
 .success-anim{text-align:center;padding:20px}
 .success-icon{font-size:48px;animation:pop .5s}
 .success-msg{font-size:16px;font-weight:700;color:#10b981;margin:6px 0}
 .success-detail{font-size:12px;color:#64748b}
 @keyframes pop{0%{transform:scale(0)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
 
-/* EMPTY */
 .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;color:#94a3b8;gap:6px}
 .empty-state .es-icon{font-size:30px}
 .empty-state .es-text{font-size:12px}
@@ -283,15 +289,43 @@ input,select,textarea{user-select:text;-webkit-user-select:text;font-family:inhe
 <div id="app"></div>
 <input type="file" id="csv-file-input" accept=".csv,.txt" style="display:none">
 <script>
+// ==================== UTILITY ====================
+function todayStr(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function timeStr(){var d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0');}
+function fmt(n){return '$'+Number(n||0).toFixed(2);}
+function nextId(arr){return arr.length?Math.max.apply(null,arr.map(function(i){return i.id;}))+1:1;}
+function dateAdd(str,days){var d=new Date(str+'T12:00:00');d.setDate(d.getDate()+days);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function dateName(str){
+  var d=new Date(str+'T12:00:00');
+  var dias=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  var meses=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  return dias[d.getDay()]+' '+d.getDate()+' '+meses[d.getMonth()]+' '+d.getFullYear();
+}
+function pctChange(cur,prev){if(!prev)return cur>0?100:0;return((cur-prev)/prev*100);}
+function getCartTotal(){return S.cart.reduce(function(s,i){return s+i.price*i.qty;},0);}
+function getCartCount(){return S.cart.reduce(function(s,i){return s+i.qty;},0);}
+function getChangeBreakdown(amount){
+  var denoms=[1000,500,200,100,50,20,10,5,2,1,0.5];
+  var res=[];var rem=Math.round(amount*100)/100;
+  for(var di=0;di<denoms.length;di++){var dd=denoms[di];var count=Math.floor(rem/dd);if(count>0){res.push({value:dd,count:count,isBill:dd>=20});rem=Math.round((rem-dd*count)*100)/100;}}
+  return res;
+}
+function getWeekDays(dateStr){
+  var date=new Date(dateStr+'T12:00:00');var day=date.getDay();
+  var mon=new Date(date);mon.setDate(date.getDate()-(day===0?6:day-1));
+  var days=[];for(var i=0;i<7;i++){var d=new Date(mon);d.setDate(mon.getDate()+i);days.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'));}
+  return days;
+}
+
 // ==================== DATE TRACKING ====================
-let currentDay=null;
-let showDayChangeBanner=false;
+var currentDay=todayStr();
+var showDayChangeBanner=false;
 
 // ==================== STATE ====================
-let S={
+var S={
   view:'tpv',
   tpvMode:'browse',selCat:'all',payMethod:'cash',numpad:'',
-  manMode:'input',manMethod:'cash',manNumpad:'',manPaid:'',manDesc:'',
+  manMode:'input',manStep:1,manNumpad:'',manPaid:'',manDesc:'',manMethod:'cash',
   wdMode:'input',wdReason:'basura',wdNumpad:'',
   dbTab:'categories',dbEditing:null,dbFormName:'',dbFormColor:'#ef4444',dbFormCatId:'',dbFormSubId:'',dbPriceNumpad:'',
   rptDate:todayStr(),
@@ -299,9 +333,9 @@ let S={
 };
 
 // ==================== DATA ====================
-let cats=[],subs=[],prods=[],txns=[];
-const COLORS=['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#8b5cf6','#ec4899','#6b7280','#78716c'];
-const LS_KEYS={cats:'tpv_cats',subs:'tpv_subs',prods:'tpv_prods',txns:'tpv_txns'};
+var cats=[],subs=[],prods=[],txns=[];
+var COLORS=['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#8b5cf6','#ec4899','#6b7280','#78716c'];
+var LS_KEYS={cats:'tpv_cats',subs:'tpv_subs',prods:'tpv_prods',txns:'tpv_txns'};
 
 function save(){
   localStorage.setItem(LS_KEYS.cats,JSON.stringify(cats));
@@ -324,95 +358,78 @@ function seed(){
     {id:7,name:'Dulces',catId:4},{id:8,name:'Salados',catId:4}
   ];
   prods=[
-    {id:1,name:'Café Americano',price:45,catId:1,subId:1},
-    {id:2,name:'Cappuccino',price:55,catId:1,subId:1},
-    {id:3,name:'Latte',price:60,catId:1,subId:1},
-    {id:4,name:'Té Verde',price:40,catId:1,subId:1},
-    {id:5,name:'Agua Natural',price:20,catId:1,subId:2},
-    {id:6,name:'Limonada',price:35,catId:1,subId:2},
-    {id:7,name:'Jugo Naranja',price:40,catId:1,subId:2},
-    {id:8,name:'Refresco',price:25,catId:1,subId:2},
-    {id:9,name:'Hamburguesa',price:89,catId:2,subId:3},
-    {id:10,name:'Ensalada',price:75,catId:2,subId:3},
-    {id:11,name:'Torta Jamón',price:65,catId:2,subId:4},
-    {id:12,name:'Quesadilla',price:45,catId:2,subId:4},
+    {id:1,name:'Café Americano',price:45,catId:1,subId:1},{id:2,name:'Cappuccino',price:55,catId:1,subId:1},
+    {id:3,name:'Latte',price:60,catId:1,subId:1},{id:4,name:'Té Verde',price:40,catId:1,subId:1},
+    {id:5,name:'Agua Natural',price:20,catId:1,subId:2},{id:6,name:'Limonada',price:35,catId:1,subId:2},
+    {id:7,name:'Jugo Naranja',price:40,catId:1,subId:2},{id:8,name:'Refresco',price:25,catId:1,subId:2},
+    {id:9,name:'Hamburguesa',price:89,catId:2,subId:3},{id:10,name:'Ensalada',price:75,catId:2,subId:3},
+    {id:11,name:'Torta Jamón',price:65,catId:2,subId:4},{id:12,name:'Quesadilla',price:45,catId:2,subId:4},
     {id:13,name:'Tacos (3)',price:55,catId:2,subId:4},
-    {id:14,name:'Pastel Choco',price:50,catId:3,subId:5},
-    {id:15,name:'Cheesecake',price:55,catId:3,subId:5},
-    {id:16,name:'Helado Vainilla',price:35,catId:3,subId:6},
-    {id:17,name:'Helado Choco',price:35,catId:3,subId:6},
-    {id:18,name:'Chocolate',price:25,catId:4,subId:7},
-    {id:19,name:'Gomitas',price:15,catId:4,subId:7},
-    {id:20,name:'Papas Fritas',price:30,catId:4,subId:8},
-    {id:21,name:'Cacahuates',price:20,catId:4,subId:8}
+    {id:14,name:'Pastel Choco',price:50,catId:3,subId:5},{id:15,name:'Cheesecake',price:55,catId:3,subId:5},
+    {id:16,name:'Helado Vainilla',price:35,catId:3,subId:6},{id:17,name:'Helado Choco',price:35,catId:3,subId:6},
+    {id:18,name:'Chocolate',price:25,catId:4,subId:7},{id:19,name:'Gomitas',price:15,catId:4,subId:7},
+    {id:20,name:'Papas Fritas',price:30,catId:4,subId:8},{id:21,name:'Cacahuates',price:20,catId:4,subId:8}
   ];
   save();
 }
 
-// ==================== UTILITY ====================
-function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-function timeStr(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0');}
-function fmt(n){return '$'+Number(n||0).toFixed(2);}
-function nextId(arr){return arr.length?Math.max(...arr.map(i=>i.id))+1:1;}
-function dateAdd(str,days){const d=new Date(str+'T12:00:00');d.setDate(d.getDate()+days);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-function dateName(str){
-  const d=new Date(str+'T12:00:00');
-  const dias=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-  const meses=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  return dias[d.getDay()]+' '+d.getDate()+' '+meses[d.getMonth()]+' '+d.getFullYear();
+// ==================== INPUT PRESERVATION ====================
+function preserveInputs(){
+  var el1=document.getElementById('man-desc');
+  if(el1)S.manDesc=el1.value;
+  var el2=document.getElementById('db-name');
+  if(el2)S.dbFormName=el2.value;
 }
-function pctChange(cur,prev){if(!prev)return cur>0?100:0;return((cur-prev)/prev*100);}
-function getCartTotal(){return S.cart.reduce((s,i)=>s+i.price*i.qty,0);}
-function getCartCount(){return S.cart.reduce((s,i)=>s+i.qty,0);}
-function getChangeBreakdown(amount){
-  const denoms=[1000,500,200,100,50,20,10,5,2,1,0.5];
-  const res=[];
-  let rem=Math.round(amount*100)/100;
-  for(const d of denoms){const count=Math.floor(rem/d);if(count>0){res.push({value:d,count,isBill:d>=20});rem=Math.round((rem-d*count)*100)/100;}}
-  return res;
-}
+
+// ==================== NUMPAD ====================
 function numpadPress(target,key){
-  let v=S[target]||'';
+  preserveInputs();
+  var v=S[target]||'';
   if(key==='C'){v='';}
   else if(key==='back'){v=v.slice(0,-1);}
   else if(key==='.'){if(!v.includes('.')){v+=v?'.':'0.';}}
-  else{v+=key;const p=v.split('.');if(p[1]&&p[1].length>2)return;}
+  else{
+    if(v==='0'&&key!=='0'){v=key;}
+    else if(v==='0'&&key==='0'){return;}
+    else{v+=key;}
+    var p=v.split('.');if(p[1]&&p[1].length>2)return;
+  }
   S[target]=v;
-  const el=document.getElementById('np-display-'+target);
-  if(el)el.textContent=v?'$'+v:'$0';
+  render();
 }
-function getWeekDays(dateStr){
-  const date=new Date(dateStr+'T12:00:00');
-  const day=date.getDay();
-  const mon=new Date(date);
-  mon.setDate(date.getDate()-(day===0?6:day-1));
-  const days=[];
-  for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);days.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'));}
-  return days;
+
+function renderNumpad(target){
+  return '<div class="numpad">'+
+    ['1','2','3','4','5','6','7','8','9','.','0','back'].map(function(k){
+      if(k==='back')return '<button data-action="numpad" data-target="'+target+'" data-value="back">⌫</button>';
+      return '<button data-action="numpad" data-target="'+target+'" data-value="'+k+'">'+k+'</button>';
+    }).join('')+
+    '<button class="key-clear" data-action="numpad" data-target="'+target+'" data-value="C">Borrar</button>'+
+  '</div>';
 }
 
 // ==================== CSV ====================
-let csvResult=null;
+var csvResult=null;
 
 function parseCSV(text){
-  const lines=text.split(/\r?\n/).filter(l=>l.trim());
+  var lines=text.split(/\r?\n/).filter(function(l){return l.trim();});
   if(lines.length<2)return{error:'El archivo CSV está vacío o no tiene datos.'};
-  const sep=lines[0].includes(';')?';':',';
-  const header=lines[0].split(sep).map(h=>h.trim().toLowerCase().replace(/['"]/g,'').normalize('NFD').replace(/[\u0300-\u036f]/g,''));
-  const colMap={};
-  const knownCols=['categoria','color_categoria','subcategoria','nombre_producto','precio'];
-  knownCols.forEach(c=>{
-    const idx=header.findIndex(h=>{const hn=h.replace(/[_\s]/g,'');const cn=c.replace(/[_\s]/g,'');return hn===cn||hn.includes(cn);});
+  var sep=lines[0].includes(';')?';':',';
+  var header=lines[0].split(sep).map(function(h){return h.trim().toLowerCase().replace(/['"]/g,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');});
+  var colMap={};
+  var knownCols=['categoria','color_categoria','subcategoria','nombre_producto','precio'];
+  knownCols.forEach(function(c){
+    var idx=header.findIndex(function(h){var hn=h.replace(/[_\s]/g,'');var cn=c.replace(/[_\s]/g,'');return hn===cn||hn.includes(cn);});
     colMap[c]=idx;
   });
   if(colMap['categoria']===-1||colMap['nombre_producto']===-1||colMap['precio']===-1){
     return{error:'Faltan columnas obligatorias: categoria, nombre_producto, precio.'};
   }
-  const rows=[];
-  for(let i=1;i<lines.length;i++){
-    const vals=lines[i].split(sep).map(v=>v.trim().replace(/^['"]|['"]$/g,''));
+  var rows=[];
+  for(var i=1;i<lines.length;i++){
+    var vals=lines[i].split(sep).map(function(v){return v.trim().replace(/^['"]|['"]$/g,'');});
     if(vals.length<3)continue;
-    const row={
+    var row={
       categoria:vals[colMap['categoria']]||'',
       color_categoria:vals[colMap['color_categoria']]||'',
       subcategoria:colMap['subcategoria']>-1?(vals[colMap['subcategoria']]||''):'',
@@ -422,30 +439,30 @@ function parseCSV(text){
     if(row.categoria&&row.nombre_producto&&row.precio>0)rows.push(row);
   }
   if(!rows.length)return{error:'No se encontraron filas válidas.'};
-  return{rows};
+  return{rows:rows};
 }
 
 function importCSV(text,mode){
-  const result=parseCSV(text);
+  var result=parseCSV(text);
   if(result.error){csvResult={type:'error',message:result.error};render();return;}
-  const rows=result.rows;
+  var rows=result.rows;
   if(mode==='replace'){cats=[];subs=[];prods=[];}
-  let newCats=0,newSubs=0,newProds=0,skipProds=0;
-  const catColorIdx=[0];
-  rows.forEach(row=>{
-    let cat=cats.find(c=>c.name.toLowerCase()===row.categoria.toLowerCase());
+  var newCats=0,newSubs=0,newProds=0,skipProds=0;
+  var catColorIdx=0;
+  rows.forEach(function(row){
+    var cat=cats.find(function(c){return c.name.toLowerCase()===row.categoria.toLowerCase();});
     if(!cat){
-      let color=row.color_categoria;
-      if(!color||!color.startsWith('#')){color=COLORS[catColorIdx[0]%COLORS.length];catColorIdx[0]++;}
-      cat={id:nextId(cats),name:row.categoria,color};
+      var color=row.color_categoria;
+      if(!color||!color.startsWith('#')){color=COLORS[catColorIdx%COLORS.length];catColorIdx++;}
+      cat={id:nextId(cats),name:row.categoria,color:color};
       cats.push(cat);newCats++;
     }
-    let sub=null;
+    var sub=null;
     if(row.subcategoria){
-      sub=subs.find(s=>s.name.toLowerCase()===row.subcategoria.toLowerCase()&&s.catId===cat.id);
+      sub=subs.find(function(s){return s.name.toLowerCase()===row.subcategoria.toLowerCase()&&s.catId===cat.id;});
       if(!sub){sub={id:nextId(subs),name:row.subcategoria,catId:cat.id};subs.push(sub);newSubs++;}
     }
-    const existing=prods.find(p=>p.name.toLowerCase()===row.nombre_producto.toLowerCase()&&p.catId===cat.id);
+    var existing=prods.find(function(p){return p.name.toLowerCase()===row.nombre_producto.toLowerCase()&&p.catId===cat.id;});
     if(existing){existing.price=row.precio;if(sub)existing.subId=sub.id;skipProds++;}
     else{prods.push({id:nextId(prods),name:row.nombre_producto,catId:cat.id,subId:sub?sub.id:0,price:row.precio});newProds++;}
   });
@@ -455,10 +472,10 @@ function importCSV(text,mode){
 }
 
 function exportCSV(){
-  let csv='categoria,color_categoria,subcategoria,nombre_producto,precio\n';
-  prods.forEach(p=>{
-    const cat=cats.find(c=>c.id===p.catId);const sub=subs.find(s=>s.id===p.subId);
-    csv+='"'+(cat?cat.name:'')+'","'+(cat?cat.color:'')+'","'+(sub?sub.name:'')+'","'+p.name+'",'+p.price.toFixed(2)+'\n';
+  var csv='categoria,color_categoria,subcategoria,nombre_producto,precio\n';
+  prods.forEach(function(p){
+    var cat=cats.find(function(c){return c.id===p.catId;});var sub=subs.find(function(s){return s.id===p.subId;});
+    csv+='"'+(cat?cat.name:'')+'",'+(cat?'"'+cat.color+'"':'')+','+(sub?'"'+sub.name+'"':'')+','+ '"'+p.name+'",'+p.price.toFixed(2)+'\n';
   });
   downloadFile('tpv_productos_'+todayStr()+'.csv',csv,'text/csv');
 }
@@ -466,60 +483,58 @@ function exportTemplate(){
   downloadFile('plantilla_tpv.csv','categoria,color_categoria,subcategoria,nombre_producto,precio\nBebidas,#3b82f6,Calientes,Café Americano,45.00\nBebidas,#3b82f6,Frías,Limonada,35.00\nComida,#ef4444,Platillos,Hamburguesa,89.00\n','text/csv');
 }
 function exportTransactions(){
-  let csv='fecha,hora,tipo,metodo,total,pagado,cambio,descripcion,productos\n';
-  txns.forEach(t=>{
-    const items=t.items&&t.items.length?t.items.map(i=>i.name+'×'+i.qty).join(' | '):'';
+  var csv='fecha,hora,tipo,metodo,total,pagado,cambio,descripcion,productos\n';
+  txns.forEach(function(t){
+    var items=t.items&&t.items.length?t.items.map(function(i){return i.name+'×'+i.qty;}).join(' | '):'';
     csv+=t.date+','+t.time+','+t.type+','+(t.method||'')+','+t.total.toFixed(2)+','+(t.paid||0).toFixed(2)+','+(t.change||0).toFixed(2)+',"'+(t.description||'')+'","'+items+'"\n';
   });
   downloadFile('tpv_transacciones_'+todayStr()+'.csv',csv,'text/csv');
 }
 function downloadFile(filename,content,type){
-  const blob=new Blob(['\uFEFF'+content],{type:type+';charset=utf-8'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download=filename;
+  var blob=new Blob(['\uFEFF'+content],{type:type+';charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download=filename;
   document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
 }
 function clearAllData(){
-  if(confirm('⚠️ ¿Eliminar TODO?')){cats=[];subs=[];prods=[];S.cart=[];save();csvResult={type:'success',message:'🗑️ Datos eliminados.'};render();}
+  if(confirm('⚠️ ¿Eliminar TODOS los productos, categorías y subcategorías?')){cats=[];subs=[];prods=[];S.cart=[];save();csvResult={type:'success',message:'🗑️ Datos eliminados.'};render();}
 }
 
 // ==================== RENDER ====================
 function render(){
-  const now=new Date();
-  const clockTime=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
-  const clockDias=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
-  const clockMeses=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  const clockDateStr=clockDias[now.getDay()]+' '+now.getDate()+' '+clockMeses[now.getMonth()];
+  preserveInputs();
+  var now=new Date();
+  var clockTime=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  var clockDias=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  var clockMeses=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  var clockDateStr=clockDias[now.getDay()]+' '+now.getDate()+' '+clockMeses[now.getMonth()];
 
-  document.getElementById('app').innerHTML=`
-    ${showDayChangeBanner?`<div class="day-changed-banner">
-      <span>🌅 ¡Nuevo día! ${dateName(todayStr())}</span>
-      <button data-action="dismiss-day-banner">OK</button>
-    </div>`:''}
-    <nav class="sidebar">
-      <div class="logo">TPV</div>
-      <div class="sidebar-clock">
-        <div class="clock-time" id="sidebar-clock-time">${clockTime}</div>
-        <div class="clock-date" id="sidebar-clock-date">${clockDateStr}</div>
-      </div>
-      ${navBtn('tpv','🛒','TPV')}
-      ${navBtn('manual','✏️','Manual')}
-      ${navBtn('withdrawal','💸','Retiro')}
-      ${navBtn('database','📦','Datos')}
-      ${navBtn('reports','📊','Reportes')}
-    </nav>
-    <div class="main">
-      <div class="view ${S.view==='tpv'?'active':''}">${renderTPV()}</div>
-      <div class="view ${S.view==='manual'?'active':''}">${renderManual()}</div>
-      <div class="view ${S.view==='withdrawal'?'active':''}">${renderWithdrawal()}</div>
-      <div class="view ${S.view==='database'?'active':''}">${renderDatabase()}</div>
-      <div class="view ${S.view==='reports'?'active':''}">${renderReports()}</div>
-    </div>
-  `;
+  document.getElementById('app').innerHTML=
+    (showDayChangeBanner?'<div class="day-changed-banner"><span>🌅 ¡Nuevo día! '+dateName(todayStr())+'</span><button data-action="dismiss-day-banner">OK</button></div>':'')+
+    '<nav class="sidebar">'+
+      '<div class="logo">TPV</div>'+
+      '<div class="sidebar-clock">'+
+        '<div class="clock-time" id="sidebar-clock-time">'+clockTime+'</div>'+
+        '<div class="clock-date" id="sidebar-clock-date">'+clockDateStr+'</div>'+
+      '</div>'+
+      navBtn('tpv','🛒','TPV')+
+      navBtn('manual','✏️','Manual')+
+      navBtn('withdrawal','💸','Retiro')+
+      navBtn('database','📦','Datos')+
+      navBtn('reports','📊','Reportes')+
+    '</nav>'+
+    '<div class="main">'+
+      '<div class="view '+(S.view==='tpv'?'active':'')+'">'+renderTPV()+'</div>'+
+      '<div class="view '+(S.view==='manual'?'active':'')+'">'+renderManual()+'</div>'+
+      '<div class="view '+(S.view==='withdrawal'?'active':'')+'">'+renderWithdrawal()+'</div>'+
+      '<div class="view '+(S.view==='database'?'active':'')+'">'+renderDatabase()+'</div>'+
+      '<div class="view '+(S.view==='reports'?'active':'')+'">'+renderReports()+'</div>'+
+    '</div>';
   afterRender();
 }
+
 function navBtn(view,icon,label){
-  return`<button class="nav-btn ${S.view===view?'active':''}" data-action="nav" data-value="${view}"><span class="icon">${icon}</span>${label}</button>`;
+  return '<button class="nav-btn '+(S.view===view?'active':'')+'" data-action="nav" data-value="'+view+'"><span class="icon">'+icon+'</span>'+label+'</button>';
 }
 
 // ==================== TPV ====================
@@ -527,609 +542,640 @@ function renderTPV(){
   if(S.tpvMode==='pay')return renderTPVPay();
   if(S.tpvMode==='change')return renderTPVChange();
   if(S.tpvMode==='success')return renderTPVSuccess();
-  const filteredCats=S.selCat==='all'?cats:cats.filter(c=>c.id==S.selCat);
-  let prodHTML='';
-  filteredCats.forEach(cat=>{
-    const catSubs=subs.filter(s=>s.catId===cat.id);
-    const noSubProds=prods.filter(p=>p.catId===cat.id&&!catSubs.find(s=>s.id===p.subId));
+  var filteredCats=S.selCat==='all'?cats:cats.filter(function(c){return c.id==S.selCat;});
+  var prodHTML='';
+  filteredCats.forEach(function(cat){
+    var catSubs=subs.filter(function(s){return s.catId===cat.id;});
+    var noSubProds=prods.filter(function(p){return p.catId===cat.id&&!catSubs.find(function(s){return s.id===p.subId;});});
     if(catSubs.length===0&&noSubProds.length===0){
-      const allP=prods.filter(p=>p.catId===cat.id);
+      var allP=prods.filter(function(p){return p.catId===cat.id;});
       if(allP.length)prodHTML+=subSection(cat,'General',allP);
       return;
     }
-    catSubs.forEach(sub=>{
-      const sp=prods.filter(p=>p.catId===cat.id&&p.subId===sub.id);
+    catSubs.forEach(function(sub){
+      var sp=prods.filter(function(p){return p.catId===cat.id&&p.subId===sub.id;});
       if(sp.length)prodHTML+=subSection(cat,sub.name,sp);
     });
     if(noSubProds.length)prodHTML+=subSection(cat,'General',noSubProds);
   });
-  if(!prodHTML)prodHTML='<div class="empty-state"><span class="es-icon">📦</span><span class="es-text">No hay productos</span></div>';
-  return`<div class="tpv">
-    <div class="tpv-left">
-      <div class="cat-bar">
-        <button class="cat-btn ${S.selCat==='all'?'active':''}" data-action="sel-cat" data-value="all" style="${S.selCat==='all'?'background:#6366f1;color:#fff;border-color:#6366f1':''}">Todos</button>
-        ${cats.map(c=>`<button class="cat-btn ${S.selCat==c.id?'active':''}" data-action="sel-cat" data-value="${c.id}" style="${S.selCat==c.id?'background:'+c.color+';color:#fff;border-color:'+c.color:'border-color:'+c.color+';color:'+c.color}">${c.name}</button>`).join('')}
-      </div>
-      <div class="prod-area">${prodHTML}</div>
-    </div>
-    <div class="cart">${renderCart()}</div>
-  </div>`;
+  if(!prodHTML)prodHTML='<div class="empty-state"><span class="es-icon">📦</span><span class="es-text">No hay productos. Agrega desde Base de Datos.</span></div>';
+  return '<div class="tpv">'+
+    '<div class="tpv-left">'+
+      '<div class="cat-bar">'+
+        '<button class="cat-btn '+(S.selCat==='all'?'active':'')+'" data-action="sel-cat" data-value="all" style="'+(S.selCat==='all'?'background:#6366f1;color:#fff;border-color:#6366f1':'')+'">Todos</button>'+
+        cats.map(function(c){return '<button class="cat-btn '+(S.selCat==c.id?'active':'')+'" data-action="sel-cat" data-value="'+c.id+'" style="'+(S.selCat==c.id?'background:'+c.color+';color:#fff;border-color:'+c.color:'border-color:'+c.color+';color:'+c.color)+'">'+c.name+'</button>';}).join('')+
+      '</div>'+
+      '<div class="prod-area">'+prodHTML+'</div>'+
+    '</div>'+
+    '<div class="cart">'+renderCart()+'</div>'+
+  '</div>';
 }
+
 function subSection(cat,subName,items){
-  const isAll=S.selCat==='all';
-  const label=isAll?`<span class="dot" style="background:${cat.color}"></span>${cat.name} › ${subName}`:`<span class="dot" style="background:${cat.color}"></span>${subName}`;
-  return`<div class="sub-header">${label}<span class="cnt">${items.length}</span></div>
-  <div class="prod-grid">${items.map(p=>{
-    const inCart=S.cart.find(c=>c.prodId===p.id);
-    return`<div class="prod-card" data-action="add-cart" data-id="${p.id}" style="border-color:${cat.color}30">
-      ${inCart?'<span class="badge">'+inCart.qty+'</span>':''}
-      <div class="pname">${p.name}</div>
-      <div class="pprice">${fmt(p.price)}</div>
-    </div>`;
-  }).join('')}</div>`;
+  var isAll=S.selCat==='all';
+  var label=isAll?'<span class="dot" style="background:'+cat.color+'"></span>'+cat.name+' › '+subName:'<span class="dot" style="background:'+cat.color+'"></span>'+subName;
+  return '<div class="sub-header">'+label+'<span class="cnt">'+items.length+'</span></div>'+
+  '<div class="prod-grid">'+items.map(function(p){
+    var inCart=S.cart.find(function(c){return c.prodId===p.id;});
+    return '<div class="prod-card" data-action="add-cart" data-id="'+p.id+'" style="border-color:'+cat.color+'30">'+
+      (inCart?'<span class="badge">'+inCart.qty+'</span>':'')+
+      '<div class="pname">'+p.name+'</div>'+
+      '<div class="pprice">'+fmt(p.price)+'</div>'+
+    '</div>';
+  }).join('')+'</div>';
 }
+
 function renderCart(){
-  if(!S.cart.length)return`<div class="cart-header">🛒 Carrito (0)</div><div class="cart-empty"><span class="icon">🛒</span><span>Vacío</span></div><div class="cart-footer"><button class="btn btn-primary" disabled>Cobrar</button></div>`;
-  const total=getCartTotal();const count=getCartCount();
-  return`<div class="cart-header">🛒 Carrito (${count})<span class="clear" data-action="clear-cart">Vaciar</span></div>
-  <div class="cart-items">${S.cart.map(i=>`<div class="cart-item">
-    <div class="ci-info"><div class="ci-name">${i.name}</div><div class="ci-price">${fmt(i.price)}</div></div>
-    <div class="qty-ctrl">
-      <button data-action="cart-minus" data-id="${i.prodId}">−</button>
-      <span>${i.qty}</span>
-      <button data-action="cart-plus" data-id="${i.prodId}">+</button>
-    </div>
-    <div class="ci-total">${fmt(i.price*i.qty)}</div>
-    <button class="ci-del" data-action="cart-del" data-id="${i.prodId}">✕</button>
-  </div>`).join('')}</div>
-  <div class="cart-footer">
-    <div class="cart-total"><span>Total</span><span>${fmt(total)}</span></div>
-    <button class="btn btn-primary" data-action="go-pay">Cobrar ${fmt(total)}</button>
-  </div>`;
+  if(!S.cart.length)return '<div class="cart-header">🛒 Carrito (0)</div><div class="cart-empty"><span class="icon">🛒</span><span>Vacío</span></div><div class="cart-footer"><button class="btn btn-primary" disabled>Cobrar</button></div>';
+  var total=getCartTotal();var count=getCartCount();
+  return '<div class="cart-header">🛒 Carrito ('+count+')<span class="clear" data-action="clear-cart">Vaciar</span></div>'+
+  '<div class="cart-items">'+S.cart.map(function(i){return '<div class="cart-item">'+
+    '<div class="ci-info"><div class="ci-name">'+i.name+'</div><div class="ci-price">'+fmt(i.price)+'</div></div>'+
+    '<div class="qty-ctrl">'+
+      '<button data-action="cart-minus" data-id="'+i.prodId+'">−</button>'+
+      '<span>'+i.qty+'</span>'+
+      '<button data-action="cart-plus" data-id="'+i.prodId+'">+</button>'+
+    '</div>'+
+    '<div class="ci-total">'+fmt(i.price*i.qty)+'</div>'+
+    '<button class="ci-del" data-action="cart-del" data-id="'+i.prodId+'">✕</button>'+
+  '</div>';}).join('')+'</div>'+
+  '<div class="cart-footer">'+
+    '<div class="cart-total"><span>Total</span><span>'+fmt(total)+'</span></div>'+
+    '<button class="btn btn-primary" data-action="go-pay">Cobrar '+fmt(total)+'</button>'+
+  '</div>';
 }
+
 function renderTPVPay(){
-  const total=getCartTotal();const numVal=parseFloat(S.numpad)||0;
-  const canPay=S.payMethod==='card'||(numVal>=total);
-  return`<div class="tpv"><div class="pay-screen"><div class="pay-box">
-    <div class="pay-title">Total a cobrar</div>
-    <div class="pay-amount">${fmt(total)}</div>
-    <div class="pay-methods">
-      <div class="pay-method ${S.payMethod==='cash'?'active':''}" data-action="pay-method" data-value="cash">💵 Efectivo</div>
-      <div class="pay-method ${S.payMethod==='card'?'active':''}" data-action="pay-method" data-value="card">💳 Tarjeta</div>
-    </div>
-    ${S.payMethod==='cash'?`
-      <div class="numpad-display" id="np-display-numpad">${S.numpad?'$'+S.numpad:'$0'}</div>
-      <div class="quick-amounts">
-        <button class="quick-btn" data-action="quick-amt" data-value="${total}">Exacto</button>
-        ${[20,50,100,200,500,1000].filter(v=>v>=total).map(v=>`<button class="quick-btn" data-action="quick-amt" data-value="${v}">$${v}</button>`).join('')}
-      </div>
-      ${renderNumpad('numpad')}
-    `:'<div style="text-align:center;padding:20px;color:#64748b"><div style="font-size:32px;margin-bottom:8px">💳</div>Pago con tarjeta</div>'}
-    <div class="pay-actions">
-      <button class="btn btn-outline" data-action="cancel-pay">Cancelar</button>
-      <button class="btn btn-success" data-action="confirm-pay" ${canPay?'':'disabled'}>${S.payMethod==='card'?'Confirmar':'Cobrar'}</button>
-    </div>
-  </div></div></div>`;
+  var total=getCartTotal();var numVal=parseFloat(S.numpad)||0;
+  var canPay=S.payMethod==='card'||(numVal>=total);
+  return '<div class="tpv"><div class="pay-screen"><div class="pay-box">'+
+    '<div class="pay-title">Total a cobrar</div>'+
+    '<div class="pay-amount">'+fmt(total)+'</div>'+
+    '<div class="pay-methods">'+
+      '<div class="pay-method '+(S.payMethod==='cash'?'active':'')+'" data-action="pay-method" data-value="cash">💵 Efectivo</div>'+
+      '<div class="pay-method '+(S.payMethod==='card'?'active':'')+'" data-action="pay-method" data-value="card">💳 Tarjeta</div>'+
+    '</div>'+
+    (S.payMethod==='cash'?
+      '<div class="numpad-display"><span class="nd-label">Recibido</span>'+(S.numpad?'$'+S.numpad:'$0')+'</div>'+
+      '<div class="quick-amounts">'+
+        '<button class="quick-btn" data-action="quick-amt" data-value="'+total+'">Exacto</button>'+
+        [20,50,100,200,500,1000].filter(function(v){return v>=total;}).map(function(v){return '<button class="quick-btn" data-action="quick-amt" data-value="'+v+'">$'+v+'</button>';}).join('')+
+      '</div>'+
+      renderNumpad('numpad')
+    :'<div style="text-align:center;padding:20px;color:#64748b"><div style="font-size:32px;margin-bottom:8px">💳</div>Pago con tarjeta</div>')+
+    '<div class="pay-actions">'+
+      '<button class="btn btn-outline" data-action="cancel-pay">Cancelar</button>'+
+      '<button class="btn btn-success" data-action="confirm-pay" '+(canPay?'':'disabled')+'>'+(S.payMethod==='card'?'Confirmar Pago':'Cobrar '+fmt(numVal>=total?numVal:0))+'</button>'+
+    '</div>'+
+  '</div></div></div>';
 }
+
 function renderTPVChange(){
-  const total=getCartTotal();const paid=parseFloat(S.numpad)||total;
-  const change=Math.round((paid-total)*100)/100;const breakdown=getChangeBreakdown(change);
-  return`<div class="tpv"><div class="pay-screen"><div class="pay-box change-screen">
-    <div class="change-check">✅</div>
-    <div style="font-size:16px;font-weight:700;margin-bottom:10px">Venta completada</div>
-    <div class="change-detail"><span>Total: <b>${fmt(total)}</b></span><span>Pagado: <b>${fmt(paid)}</b></span></div>
-    <div class="change-label">Cambio</div>
-    <div class="change-amount">${fmt(change)}</div>
-    ${change>0?`<div class="bills-area">${breakdown.map(d=>{
-      if(d.isBill)return`<div class="denomination">${d.count>1?'<span class="bill-count">×'+d.count+'</span>':''}<div class="bill bill-${d.value}"><span class="bill-label">$${d.value}</span></div></div>`;
-      const v=d.value===0.5?'050':d.value;
-      return`<div class="denomination">${d.count>1?'<span class="bill-count">×'+d.count+'</span>':''}<div class="coin coin-${v}">$${d.value===0.5?'0.50':d.value}</div></div>`;
-    }).join('')}</div>`:''}
-    <button class="btn btn-primary" data-action="new-sale" style="margin-top:8px">Nueva Venta</button>
-  </div></div></div>`;
+  var total=getCartTotal();var paid=parseFloat(S.numpad)||total;
+  var change=Math.round((paid-total)*100)/100;var breakdown=getChangeBreakdown(change);
+  return '<div class="tpv"><div class="pay-screen"><div class="pay-box change-screen">'+
+    '<div class="change-check">✅</div>'+
+    '<div style="font-size:16px;font-weight:700;margin-bottom:10px">Venta completada</div>'+
+    '<div class="change-detail"><span>Total: <b>'+fmt(total)+'</b></span><span>Pagado: <b>'+fmt(paid)+'</b></span></div>'+
+    '<div class="change-label">Cambio</div>'+
+    '<div class="change-amount">'+fmt(change)+'</div>'+
+    (change>0?'<div class="bills-area">'+renderBillsCoins(breakdown)+'</div>':'')+
+    '<button class="btn btn-primary" data-action="new-sale" style="margin-top:8px">Nueva Venta</button>'+
+  '</div></div></div>';
 }
+
 function renderTPVSuccess(){
-  return`<div class="tpv"><div class="pay-screen"><div class="pay-box">
-    <div class="success-anim"><div class="success-icon">✅</div>
-    <div class="success-msg">Pago con tarjeta exitoso</div>
-    <div class="success-detail">${fmt(getCartTotal())}</div></div>
-    <button class="btn btn-primary" data-action="new-sale" style="margin-top:14px">Nueva Venta</button>
-  </div></div></div>`;
+  return '<div class="tpv"><div class="pay-screen"><div class="pay-box">'+
+    '<div class="success-anim"><div class="success-icon">✅</div>'+
+    '<div class="success-msg">Pago con tarjeta exitoso</div>'+
+    '<div class="success-detail">'+fmt(getCartTotal())+'</div></div>'+
+    '<button class="btn btn-primary" data-action="new-sale" style="margin-top:14px">Nueva Venta</button>'+
+  '</div></div></div>';
+}
+
+function renderBillsCoins(breakdown){
+  return breakdown.map(function(d){
+    if(d.isBill)return '<div class="denomination">'+(d.count>1?'<span class="bill-count">×'+d.count+'</span>':'')+'<div class="bill bill-'+d.value+'"><span class="bill-label">$'+d.value+'</span></div></div>';
+    var v=d.value===0.5?'050':d.value;
+    return '<div class="denomination">'+(d.count>1?'<span class="bill-count">×'+d.count+'</span>':'')+'<div class="coin coin-'+v+'">$'+(d.value===0.5?'0.50':d.value)+'</div></div>';
+  }).join('');
 }
 
 // ==================== MANUAL ====================
 function renderManual(){
   if(S.manMode==='change')return renderManualChange();
   if(S.manMode==='success')return renderManualSuccess();
-  const numVal=parseFloat(S.manNumpad)||0;
-  return`<div class="manual-view"><div class="manual-box">
-    <h2 style="margin-bottom:12px;font-size:16px">✏️ Entrada Manual</h2>
-    <label class="form-label">Descripción (opcional)</label>
-    <input class="form-input" id="man-desc" type="text" placeholder="Descripción..." value="${S.manDesc}">
-    <label class="form-label">Monto</label>
-    <div class="numpad-display" id="np-display-manNumpad">${S.manNumpad?'$'+S.manNumpad:'$0'}</div>
-    <div class="pay-methods" style="margin-bottom:10px">
-      <div class="pay-method ${S.manMethod==='cash'?'active':''}" data-action="man-method" data-value="cash">💵 Efectivo</div>
-      <div class="pay-method ${S.manMethod==='card'?'active':''}" data-action="man-method" data-value="card">💳 Tarjeta</div>
-    </div>
-    ${S.manMethod==='cash'?`
-      <label class="form-label">Recibido</label>
-      <div class="numpad-display" id="np-display-manPaid" style="font-size:20px;padding:8px">${S.manPaid?'$'+S.manPaid:'$0'}</div>
-      <div class="quick-amounts">
-        ${numVal>0?`<button class="quick-btn" data-action="man-quick" data-value="${numVal}">Exacto</button>`:''}
-        ${[20,50,100,200,500,1000].filter(v=>v>=numVal&&numVal>0).map(v=>`<button class="quick-btn" data-action="man-quick" data-value="${v}">$${v}</button>`).join('')}
-      </div>
-    `:''}
-    ${renderNumpad(S.manMethod==='cash'?'manPaid':'manNumpad')}
-    <button class="btn btn-success" data-action="man-confirm" ${numVal>0?'':'disabled'}>
-      ${S.manMethod==='card'?'Confirmar':'Cobrar'}
-    </button>
-  </div></div>`;
+  if(S.manStep===2)return renderManualStep2();
+  // Step 1: Enter amount + description
+  var numVal=parseFloat(S.manNumpad)||0;
+  return '<div class="manual-view"><div class="manual-box">'+
+    '<h2>✏️ Entrada Manual</h2>'+
+    '<div class="step-indicator">'+
+      '<div class="step-dot active">1</div><div class="step-line"></div><div class="step-dot">2</div>'+
+    '</div>'+
+    '<label class="form-label">Descripción (opcional)</label>'+
+    '<input class="form-input" id="man-desc" type="text" placeholder="Ej: Servicio extra, propina..." value="'+escHTML(S.manDesc)+'">'+
+    '<label class="form-label">Monto a cobrar</label>'+
+    '<div class="numpad-display active-field"><span class="nd-label">Monto</span>'+(S.manNumpad?'$'+S.manNumpad:'$0')+'</div>'+
+    renderNumpad('manNumpad')+
+    '<div class="pay-actions">'+
+      '<button class="btn btn-success" data-action="man-go-cash" '+(numVal>0?'':'disabled')+'>💵 Efectivo '+( numVal>0?fmt(numVal):'')+'</button>'+
+      '<button class="btn btn-primary" data-action="man-go-card" '+(numVal>0?'':'disabled')+'>💳 Tarjeta '+(numVal>0?fmt(numVal):'')+'</button>'+
+    '</div>'+
+  '</div></div>';
 }
+
+function renderManualStep2(){
+  // Step 2: Cash payment - enter received
+  var total=parseFloat(S.manNumpad)||0;
+  var paidVal=parseFloat(S.manPaid)||0;
+  var canPay=paidVal>=total&&total>0;
+  return '<div class="manual-view"><div class="manual-box">'+
+    '<h2>💵 Cobro en Efectivo</h2>'+
+    '<div class="step-indicator">'+
+      '<div class="step-dot done">✓</div><div class="step-line done"></div><div class="step-dot active">2</div>'+
+    '</div>'+
+    '<div class="man-total-badge">'+
+      '<div class="mtb-label">Total a cobrar</div>'+
+      '<div class="mtb-amount">'+fmt(total)+'</div>'+
+      (S.manDesc?'<div class="mtb-desc">'+escHTML(S.manDesc)+'</div>':'')+
+    '</div>'+
+    '<label class="form-label">Monto recibido</label>'+
+    '<div class="numpad-display active-field"><span class="nd-label">Recibido</span>'+(S.manPaid?'$'+S.manPaid:'$0')+'</div>'+
+    '<div class="quick-amounts">'+
+      '<button class="quick-btn" data-action="man-quick" data-value="'+total+'">Exacto '+fmt(total)+'</button>'+
+      [20,50,100,200,500,1000].filter(function(v){return v>=total;}).map(function(v){return '<button class="quick-btn" data-action="man-quick" data-value="'+v+'">$'+v+'</button>';}).join('')+
+    '</div>'+
+    renderNumpad('manPaid')+
+    (canPay&&paidVal>total?'<div style="text-align:center;padding:6px;font-size:14px;font-weight:800;color:#f59e0b">Cambio: '+fmt(paidVal-total)+'</div>':'')+
+    '<div class="pay-actions">'+
+      '<button class="btn btn-outline" data-action="man-back">← Atrás</button>'+
+      '<button class="btn btn-success" data-action="man-confirm-cash" '+(canPay?'':'disabled')+'>Cobrar '+fmt(total)+'</button>'+
+    '</div>'+
+  '</div></div>';
+}
+
 function renderManualChange(){
-  const total=parseFloat(S.manNumpad)||0;const paid=parseFloat(S.manPaid)||total;
-  const change=Math.round((paid-total)*100)/100;const breakdown=getChangeBreakdown(change);
-  return`<div class="manual-view"><div class="manual-box change-screen">
-    <div class="change-check">✅</div>
-    <div style="font-size:16px;font-weight:700;margin-bottom:10px">Cobro registrado</div>
-    ${S.manDesc?'<div style="color:#64748b;margin-bottom:8px;font-size:12px">'+S.manDesc+'</div>':''}
-    <div class="change-detail"><span>Total: <b>${fmt(total)}</b></span><span>Pagado: <b>${fmt(paid)}</b></span></div>
-    <div class="change-label">Cambio</div>
-    <div class="change-amount">${fmt(change)}</div>
-    ${change>0?`<div class="bills-area">${breakdown.map(d=>{
-      if(d.isBill)return`<div class="denomination">${d.count>1?'<span class="bill-count">×'+d.count+'</span>':''}<div class="bill bill-${d.value}"><span class="bill-label">$${d.value}</span></div></div>`;
-      const v=d.value===0.5?'050':d.value;
-      return`<div class="denomination">${d.count>1?'<span class="bill-count">×'+d.count+'</span>':''}<div class="coin coin-${v}">$${d.value===0.5?'0.50':d.value}</div></div>`;
-    }).join('')}</div>`:''}
-    <button class="btn btn-primary" data-action="man-new" style="margin-top:8px">Nuevo Cobro</button>
-  </div></div>`;
+  var total=parseFloat(S.manNumpad)||0;var paid=parseFloat(S.manPaid)||total;
+  var change=Math.round((paid-total)*100)/100;var breakdown=getChangeBreakdown(change);
+  return '<div class="manual-view"><div class="manual-box change-screen">'+
+    '<div class="change-check">✅</div>'+
+    '<div style="font-size:16px;font-weight:700;margin-bottom:10px">Cobro registrado</div>'+
+    (S.manDesc?'<div style="color:#64748b;margin-bottom:8px;font-size:12px">'+escHTML(S.manDesc)+'</div>':'')+
+    '<div class="change-detail"><span>Total: <b>'+fmt(total)+'</b></span><span>Pagado: <b>'+fmt(paid)+'</b></span></div>'+
+    '<div class="change-label">Cambio</div>'+
+    '<div class="change-amount">'+fmt(change)+'</div>'+
+    (change>0?'<div class="bills-area">'+renderBillsCoins(breakdown)+'</div>':'')+
+    '<button class="btn btn-primary" data-action="man-new" style="margin-top:8px">Nuevo Cobro</button>'+
+  '</div></div>';
 }
+
 function renderManualSuccess(){
-  return`<div class="manual-view"><div class="manual-box">
-    <div class="success-anim"><div class="success-icon">✅</div>
-    <div class="success-msg">Cobro con tarjeta</div>
-    <div class="success-detail">${fmt(parseFloat(S.manNumpad)||0)}</div></div>
-    <button class="btn btn-primary" data-action="man-new" style="margin-top:14px">Nuevo Cobro</button>
-  </div></div>`;
+  return '<div class="manual-view"><div class="manual-box">'+
+    '<div class="success-anim"><div class="success-icon">✅</div>'+
+    '<div class="success-msg">Cobro con tarjeta exitoso</div>'+
+    '<div class="success-detail">'+fmt(parseFloat(S.manNumpad)||0)+'</div>'+
+    (S.manDesc?'<div style="color:#64748b;margin-top:4px;font-size:12px">'+escHTML(S.manDesc)+'</div>':'')+
+    '</div>'+
+    '<button class="btn btn-primary" data-action="man-new" style="margin-top:14px">Nuevo Cobro</button>'+
+  '</div></div>';
 }
 
 // ==================== WITHDRAWAL ====================
 function renderWithdrawal(){
   if(S.wdMode==='success')return renderWdSuccess();
-  const amt=parseFloat(S.wdNumpad)||0;
-  return`<div class="wd-view"><div class="wd-box">
-    <h2 style="margin-bottom:12px;font-size:16px">💸 Retiro de Efectivo</h2>
-    <label class="form-label">Motivo</label>
-    <div class="reason-grid">
-      ${[{k:'basura',i:'🗑️',l:'Basura'},{k:'limpieza',i:'🧹',l:'Limpieza'},{k:'proveedor',i:'🚛',l:'Proveedor'}].map(r=>
-        `<div class="reason-btn ${S.wdReason===r.k?'active':''}" data-action="wd-reason" data-value="${r.k}"><div class="r-icon">${r.i}</div><div class="r-label">${r.l}</div></div>`
-      ).join('')}
-    </div>
-    <label class="form-label">Monto</label>
-    <div class="numpad-display" id="np-display-wdNumpad">${S.wdNumpad?'$'+S.wdNumpad:'$0'}</div>
-    ${renderNumpad('wdNumpad')}
-    <button class="btn btn-danger" data-action="wd-confirm" ${amt>0?'':'disabled'}>Registrar ${amt>0?fmt(amt):''}</button>
-  </div></div>`;
+  var amt=parseFloat(S.wdNumpad)||0;
+  return '<div class="wd-view"><div class="wd-box">'+
+    '<h2 style="margin-bottom:12px;font-size:16px">💸 Retiro de Efectivo</h2>'+
+    '<label class="form-label">Motivo del retiro</label>'+
+    '<div class="reason-grid">'+
+      [{k:'basura',i:'🗑️',l:'Basura'},{k:'limpieza',i:'🧹',l:'Limpieza'},{k:'proveedor',i:'🚛',l:'Proveedor'}].map(function(r){
+        return '<div class="reason-btn '+(S.wdReason===r.k?'active':'')+'" data-action="wd-reason" data-value="'+r.k+'"><div class="r-icon">'+r.i+'</div><div class="r-label">'+r.l+'</div></div>';
+      }).join('')+
+    '</div>'+
+    '<label class="form-label">Monto a retirar</label>'+
+    '<div class="numpad-display active-field"><span class="nd-label">Retiro</span>'+(S.wdNumpad?'$'+S.wdNumpad:'$0')+'</div>'+
+    renderNumpad('wdNumpad')+
+    '<button class="btn btn-danger" data-action="wd-confirm" '+(amt>0?'':'disabled')+'>Registrar Retiro'+(amt>0?' de '+fmt(amt):'')+'</button>'+
+  '</div></div>';
 }
+
 function renderWdSuccess(){
-  return`<div class="wd-view"><div class="wd-box">
-    <div class="success-anim"><div class="success-icon">✅</div>
-    <div class="success-msg">Retiro registrado</div>
-    <div class="success-detail">${fmt(parseFloat(S.wdNumpad)||0)} — ${S.wdReason}</div></div>
-    <button class="btn btn-primary" data-action="wd-new" style="margin-top:14px">Nuevo Retiro</button>
-  </div></div>`;
+  var reasons={basura:'🗑️ Basura',limpieza:'🧹 Limpieza',proveedor:'🚛 Proveedor'};
+  return '<div class="wd-view"><div class="wd-box">'+
+    '<div class="success-anim"><div class="success-icon">✅</div>'+
+    '<div class="success-msg">Retiro registrado</div>'+
+    '<div class="success-detail">'+fmt(parseFloat(S.wdNumpad)||0)+' — '+(reasons[S.wdReason]||S.wdReason)+'</div></div>'+
+    '<button class="btn btn-primary" data-action="wd-new" style="margin-top:14px">Nuevo Retiro</button>'+
+  '</div></div>';
 }
 
 // ==================== DATABASE ====================
 function renderDatabase(){
-  return`<div class="db-view">
-    <div class="db-tabs">
-      ${['categories','subcategories','products'].map(t=>`<button class="db-tab ${S.dbTab===t?'active':''}" data-action="db-tab" data-value="${t}">${t==='categories'?'📁 Categorías':t==='subcategories'?'📂 Sub':'📦 Productos'}</button>`).join('')}
-    </div>
-    <div class="csv-bar">
-      <span class="csv-title">CSV</span>
-      <button class="csv-btn import-btn" data-action="csv-import-add">📥 Agregar</button>
-      <button class="csv-btn import-btn" data-action="csv-import-replace" style="border-color:#f59e0b;color:#92400e;background:#fffbeb">🔄 Reemplazar</button>
-      <button class="csv-btn export-btn" data-action="csv-export">📤 Productos</button>
-      <button class="csv-btn export-btn" data-action="csv-export-txns" style="border-color:#8b5cf6;color:#6d28d9;background:#f5f3ff">📤 Transacciones</button>
-      <button class="csv-btn template-btn" data-action="csv-template">📋 Plantilla</button>
-      <button class="csv-btn clear-btn" data-action="csv-clear-all">🗑️</button>
-    </div>
-    ${csvResult?`<div class="csv-result ${csvResult.type}"><span>${csvResult.message}</span><span class="close-result" data-action="csv-close-result">✕</span></div>`:''}
-    <div class="db-content">${S.dbTab==='categories'?renderDbCats():S.dbTab==='subcategories'?renderDbSubs():renderDbProds()}</div>
-  </div>`;
+  return '<div class="db-view">'+
+    '<div class="db-tabs">'+
+      ['categories','subcategories','products'].map(function(t){return '<button class="db-tab '+(S.dbTab===t?'active':'')+'" data-action="db-tab" data-value="'+t+'">'+(t==='categories'?'📁 Categorías':t==='subcategories'?'📂 Sub':'📦 Productos')+'</button>';}).join('')+
+    '</div>'+
+    '<div class="csv-bar">'+
+      '<span class="csv-title">CSV</span>'+
+      '<button class="csv-btn import-btn" data-action="csv-import-add">📥 Agregar</button>'+
+      '<button class="csv-btn import-btn" data-action="csv-import-replace" style="border-color:#f59e0b;color:#92400e;background:#fffbeb">🔄 Reemplazar</button>'+
+      '<button class="csv-btn export-btn" data-action="csv-export">📤 Productos</button>'+
+      '<button class="csv-btn export-btn" data-action="csv-export-txns" style="border-color:#8b5cf6;color:#6d28d9;background:#f5f3ff">📤 Trans</button>'+
+      '<button class="csv-btn template-btn" data-action="csv-template">📋 Plantilla</button>'+
+      '<button class="csv-btn clear-btn" data-action="csv-clear-all">🗑️</button>'+
+    '</div>'+
+    (csvResult?'<div class="csv-result '+csvResult.type+'"><span>'+csvResult.message+'</span><span class="close-result" data-action="csv-close-result">✕</span></div>':'')+
+    '<div class="db-content">'+(S.dbTab==='categories'?renderDbCats():S.dbTab==='subcategories'?renderDbSubs():renderDbProds())+'</div>'+
+  '</div>';
 }
+
 function renderDbCats(){
-  return`<div class="db-form">
-    <div class="db-form-title">${S.dbEditing?'✏️ Editar':'➕ Nueva'} Categoría</div>
-    <label class="form-label">Nombre</label>
-    <input class="form-input" id="db-name" type="text" placeholder="Categoría..." value="${S.dbFormName}">
-    <label class="form-label">Color</label>
-    <div class="color-grid">${COLORS.map(c=>`<div class="color-opt ${S.dbFormColor===c?'active':''}" data-action="db-color" data-value="${c}" style="background:${c}"></div>`).join('')}</div>
-    <div style="display:flex;gap:6px">
-      <button class="btn btn-primary btn-sm" data-action="db-save-cat">${S.dbEditing?'Guardar':'Agregar'}</button>
-      ${S.dbEditing?'<button class="btn btn-outline btn-sm" data-action="db-cancel">Cancelar</button>':''}
-    </div>
-  </div>
-  <div class="db-list">${cats.map(c=>`<div class="db-item">
-    <div class="di-color" style="background:${c.color}"></div>
-    <div class="di-name">${c.name}</div>
-    <div class="di-meta">${prods.filter(p=>p.catId===c.id).length} prod</div>
-    <div class="di-actions">
-      <button class="edit" data-action="db-edit-cat" data-id="${c.id}">✏️</button>
-      <button class="del" data-action="db-del-cat" data-id="${c.id}">🗑️</button>
-    </div>
-  </div>`).join('')}${!cats.length?'<div class="empty-state"><span class="es-icon">📁</span><span class="es-text">Sin categorías</span></div>':''}</div>`;
+  return '<div class="db-form">'+
+    '<div class="db-form-title">'+(S.dbEditing?'✏️ Editar':'➕ Nueva')+' Categoría</div>'+
+    '<label class="form-label">Nombre</label>'+
+    '<input class="form-input" id="db-name" type="text" placeholder="Categoría..." value="'+escHTML(S.dbFormName)+'">'+
+    '<label class="form-label">Color</label>'+
+    '<div class="color-grid">'+COLORS.map(function(c){return '<div class="color-opt '+(S.dbFormColor===c?'active':'')+'" data-action="db-color" data-value="'+c+'" style="background:'+c+'"></div>';}).join('')+'</div>'+
+    '<div style="display:flex;gap:6px">'+
+      '<button class="btn btn-primary btn-sm" data-action="db-save-cat">'+(S.dbEditing?'Guardar':'Agregar')+'</button>'+
+      (S.dbEditing?'<button class="btn btn-outline btn-sm" data-action="db-cancel">Cancelar</button>':'')+
+    '</div>'+
+  '</div>'+
+  '<div class="db-list">'+cats.map(function(c){return '<div class="db-item">'+
+    '<div class="di-color" style="background:'+c.color+'"></div>'+
+    '<div class="di-name">'+c.name+'</div>'+
+    '<div class="di-meta">'+prods.filter(function(p){return p.catId===c.id;}).length+' prod</div>'+
+    '<div class="di-actions">'+
+      '<button class="edit" data-action="db-edit-cat" data-id="'+c.id+'">✏️</button>'+
+      '<button class="del" data-action="db-del-cat" data-id="'+c.id+'">🗑️</button>'+
+    '</div>'+
+  '</div>';}).join('')+(!cats.length?'<div class="empty-state"><span class="es-icon">📁</span><span class="es-text">Sin categorías</span></div>':'')+'</div>';
 }
+
 function renderDbSubs(){
-  return`<div class="db-form">
-    <div class="db-form-title">${S.dbEditing?'✏️ Editar':'➕ Nueva'} Subcategoría</div>
-    <label class="form-label">Categoría</label>
-    <select class="form-input" id="db-cat-sel">${cats.map(c=>`<option value="${c.id}" ${S.dbFormCatId==c.id?'selected':''}>${c.name}</option>`).join('')}</select>
-    <label class="form-label">Nombre</label>
-    <input class="form-input" id="db-name" type="text" placeholder="Subcategoría..." value="${S.dbFormName}">
-    <div style="display:flex;gap:6px">
-      <button class="btn btn-primary btn-sm" data-action="db-save-sub">${S.dbEditing?'Guardar':'Agregar'}</button>
-      ${S.dbEditing?'<button class="btn btn-outline btn-sm" data-action="db-cancel">Cancelar</button>':''}
-    </div>
-  </div>
-  <div class="db-list">${subs.map(s=>{
-    const cat=cats.find(c=>c.id===s.catId);
-    return`<div class="db-item">
-      <div class="di-color" style="background:${cat?cat.color:'#6b7280'}"></div>
-      <div class="di-name">${s.name}</div>
-      <div class="di-meta">${cat?cat.name:'—'}</div>
-      <div class="di-actions">
-        <button class="edit" data-action="db-edit-sub" data-id="${s.id}">✏️</button>
-        <button class="del" data-action="db-del-sub" data-id="${s.id}">🗑️</button>
-      </div>
-    </div>`;
-  }).join('')}${!subs.length?'<div class="empty-state"><span class="es-icon">📂</span><span class="es-text">Sin subcategorías</span></div>':''}</div>`;
+  return '<div class="db-form">'+
+    '<div class="db-form-title">'+(S.dbEditing?'✏️ Editar':'➕ Nueva')+' Subcategoría</div>'+
+    '<label class="form-label">Categoría</label>'+
+    '<select class="form-input" id="db-cat-sel">'+cats.map(function(c){return '<option value="'+c.id+'" '+(S.dbFormCatId==c.id?'selected':'')+'>'+c.name+'</option>';}).join('')+'</select>'+
+    '<label class="form-label">Nombre</label>'+
+    '<input class="form-input" id="db-name" type="text" placeholder="Subcategoría..." value="'+escHTML(S.dbFormName)+'">'+
+    '<div style="display:flex;gap:6px">'+
+      '<button class="btn btn-primary btn-sm" data-action="db-save-sub">'+(S.dbEditing?'Guardar':'Agregar')+'</button>'+
+      (S.dbEditing?'<button class="btn btn-outline btn-sm" data-action="db-cancel">Cancelar</button>':'')+
+    '</div>'+
+  '</div>'+
+  '<div class="db-list">'+subs.map(function(s){
+    var cat=cats.find(function(c){return c.id===s.catId;});
+    return '<div class="db-item">'+
+      '<div class="di-color" style="background:'+(cat?cat.color:'#6b7280')+'"></div>'+
+      '<div class="di-name">'+s.name+'</div>'+
+      '<div class="di-meta">'+(cat?cat.name:'—')+'</div>'+
+      '<div class="di-actions">'+
+        '<button class="edit" data-action="db-edit-sub" data-id="'+s.id+'">✏️</button>'+
+        '<button class="del" data-action="db-del-sub" data-id="'+s.id+'">🗑️</button>'+
+      '</div>'+
+    '</div>';
+  }).join('')+(!subs.length?'<div class="empty-state"><span class="es-icon">📂</span><span class="es-text">Sin subcategorías</span></div>':'')+'</div>';
 }
+
 function renderDbProds(){
-  const filtSubs=subs.filter(s=>s.catId==S.dbFormCatId);
-  return`<div class="db-form">
-    <div class="db-form-title">${S.dbEditing?'✏️ Editar':'➕ Nuevo'} Producto</div>
-    <div class="db-form-row">
-      <div class="field"><label class="form-label">Categoría</label>
-        <select class="form-input" id="db-cat-sel">${cats.map(c=>`<option value="${c.id}" ${S.dbFormCatId==c.id?'selected':''}>${c.name}</option>`).join('')}</select>
-      </div>
-      <div class="field"><label class="form-label">Subcategoría</label>
-        <select class="form-input" id="db-sub-sel">
-          <option value="">— Ninguna —</option>
-          ${filtSubs.map(s=>`<option value="${s.id}" ${S.dbFormSubId==s.id?'selected':''}>${s.name}</option>`).join('')}
-        </select>
-      </div>
-    </div>
-    <label class="form-label">Nombre</label>
-    <input class="form-input" id="db-name" type="text" placeholder="Producto..." value="${S.dbFormName}">
-    <label class="form-label">Precio</label>
-    <div class="db-numpad-wrap">
-      <div class="db-numpad-display" id="np-display-dbPriceNumpad">${S.dbPriceNumpad?'$'+S.dbPriceNumpad:'$0'}</div>
-      <div class="db-numpad">
-        ${['1','2','3','C','4','5','6','back','7','8','9','.','','0','',''].map(k=>{
-          if(!k)return'';
-          if(k==='C')return`<button class="key-c" data-action="numpad" data-target="dbPriceNumpad" data-value="C">C</button>`;
-          if(k==='back')return`<button data-action="numpad" data-target="dbPriceNumpad" data-value="back">⌫</button>`;
-          return`<button data-action="numpad" data-target="dbPriceNumpad" data-value="${k}">${k}</button>`;
-        }).filter(Boolean).join('')}
-      </div>
-    </div>
-    <div style="display:flex;gap:6px">
-      <button class="btn btn-primary btn-sm" data-action="db-save-prod">${S.dbEditing?'Guardar':'Agregar'}</button>
-      ${S.dbEditing?'<button class="btn btn-outline btn-sm" data-action="db-cancel">Cancelar</button>':''}
-    </div>
-  </div>
-  <div class="db-list">${prods.map(p=>{
-    const cat=cats.find(c=>c.id===p.catId);const sub=subs.find(s=>s.id===p.subId);
-    return`<div class="db-item">
-      <div class="di-color" style="background:${cat?cat.color:'#6b7280'}"></div>
-      <div class="di-name">${p.name}</div>
-      <div class="di-meta">${cat?cat.name:''}${sub?' › '+sub.name:''} · ${fmt(p.price)}</div>
-      <div class="di-actions">
-        <button class="edit" data-action="db-edit-prod" data-id="${p.id}">✏️</button>
-        <button class="del" data-action="db-del-prod" data-id="${p.id}">🗑️</button>
-      </div>
-    </div>`;
-  }).join('')}${!prods.length?'<div class="empty-state"><span class="es-icon">📦</span><span class="es-text">Sin productos</span></div>':''}</div>`;
+  var filtSubs=subs.filter(function(s){return s.catId==S.dbFormCatId;});
+  return '<div class="db-form">'+
+    '<div class="db-form-title">'+(S.dbEditing?'✏️ Editar':'➕ Nuevo')+' Producto</div>'+
+    '<div class="db-form-row">'+
+      '<div class="field"><label class="form-label">Categoría</label>'+
+        '<select class="form-input" id="db-cat-sel">'+cats.map(function(c){return '<option value="'+c.id+'" '+(S.dbFormCatId==c.id?'selected':'')+'>'+c.name+'</option>';}).join('')+'</select>'+
+      '</div>'+
+      '<div class="field"><label class="form-label">Subcategoría</label>'+
+        '<select class="form-input" id="db-sub-sel">'+
+          '<option value="">— Ninguna —</option>'+
+          filtSubs.map(function(s){return '<option value="'+s.id+'" '+(S.dbFormSubId==s.id?'selected':'')+'>'+s.name+'</option>';}).join('')+
+        '</select>'+
+      '</div>'+
+    '</div>'+
+    '<label class="form-label">Nombre</label>'+
+    '<input class="form-input" id="db-name" type="text" placeholder="Producto..." value="'+escHTML(S.dbFormName)+'">'+
+    '<label class="form-label">Precio</label>'+
+    '<div class="db-numpad-wrap">'+
+      '<div class="db-numpad-display">'+(S.dbPriceNumpad?'$'+S.dbPriceNumpad:'$0')+'</div>'+
+      '<div class="db-numpad">'+
+        ['1','2','3','C','4','5','6','back','7','8','9','.','','0','',''].map(function(k){
+          if(!k)return '';
+          if(k==='C')return '<button class="key-c" data-action="numpad" data-target="dbPriceNumpad" data-value="C">C</button>';
+          if(k==='back')return '<button data-action="numpad" data-target="dbPriceNumpad" data-value="back">⌫</button>';
+          return '<button data-action="numpad" data-target="dbPriceNumpad" data-value="'+k+'">'+k+'</button>';
+        }).filter(Boolean).join('')+
+      '</div>'+
+    '</div>'+
+    '<div style="display:flex;gap:6px">'+
+      '<button class="btn btn-primary btn-sm" data-action="db-save-prod">'+(S.dbEditing?'Guardar':'Agregar')+'</button>'+
+      (S.dbEditing?'<button class="btn btn-outline btn-sm" data-action="db-cancel">Cancelar</button>':'')+
+    '</div>'+
+  '</div>'+
+  '<div class="db-list">'+prods.map(function(p){
+    var cat=cats.find(function(c){return c.id===p.catId;});var sub=subs.find(function(s){return s.id===p.subId;});
+    return '<div class="db-item">'+
+      '<div class="di-color" style="background:'+(cat?cat.color:'#6b7280')+'"></div>'+
+      '<div class="di-name">'+p.name+'</div>'+
+      '<div class="di-meta">'+(cat?cat.name:'')+(sub?' › '+sub.name:'')+' · '+fmt(p.price)+'</div>'+
+      '<div class="di-actions">'+
+        '<button class="edit" data-action="db-edit-prod" data-id="'+p.id+'">✏️</button>'+
+        '<button class="del" data-action="db-del-prod" data-id="'+p.id+'">🗑️</button>'+
+      '</div>'+
+    '</div>';
+  }).join('')+(!prods.length?'<div class="empty-state"><span class="es-icon">📦</span><span class="es-text">Sin productos</span></div>':'')+'</div>';
 }
 
 // ==================== REPORTS ====================
 function renderReports(){
-  const d=S.rptDate;
-  const dayTxns=txns.filter(t=>t.date===d);
-  const sales=dayTxns.filter(t=>t.type!=='withdrawal');
-  const wds=dayTxns.filter(t=>t.type==='withdrawal');
-  const totalSales=sales.reduce((s,t)=>s+t.total,0);
-  const cashSales=sales.filter(t=>t.method==='cash').reduce((s,t)=>s+t.total,0);
-  const cardSales=sales.filter(t=>t.method==='card').reduce((s,t)=>s+t.total,0);
-  const totalWd=wds.reduce((s,t)=>s+t.total,0);
-  const cashInRegister=cashSales-totalWd;
-  const avgTicket=sales.length?totalSales/sales.length:0;
-  const itemsSold=sales.reduce((s,t)=>s+(t.items?t.items.reduce((a,i)=>a+i.qty,0):0),0);
-  const yDate=dateAdd(d,-1);
-  const yTotal=txns.filter(t=>t.date===yDate&&t.type!=='withdrawal').reduce((s,t)=>s+t.total,0);
-  const yPct=pctChange(totalSales,yTotal);
-  const lwDate=dateAdd(d,-7);
-  const lwTotal=txns.filter(t=>t.date===lwDate&&t.type!=='withdrawal').reduce((s,t)=>s+t.total,0);
-  const lwPct=pctChange(totalSales,lwTotal);
-  const hourly={};for(let h=7;h<=22;h++)hourly[h]={total:0,count:0};
-  sales.forEach(t=>{const h=parseInt(t.time?t.time.split(':')[0]:'0');if(hourly[h]!==undefined){hourly[h].total+=t.total;hourly[h].count++;}});
-  const maxHourly=Math.max(...Object.values(hourly).map(h=>h.total),1);
-  let peakHour=7;Object.entries(hourly).forEach(([h,v])=>{if(v.total>hourly[peakHour].total)peakHour=parseInt(h);});
-  const weekDays=getWeekDays(d);
-  const dayLabels=['L','M','X','J','V','S','D'];
-  const weekData=weekDays.map(wd=>txns.filter(t=>t.date===wd&&t.type!=='withdrawal').reduce((s,t)=>s+t.total,0));
-  const maxWeek=Math.max(...weekData,1);
-  const weekTotal=weekData.reduce((s,v)=>s+v,0);
-  const prevWeekDays=weekDays.map(wd=>dateAdd(wd,-7));
-  const prevWeekTotal=prevWeekDays.map(wd=>txns.filter(t=>t.date===wd&&t.type!=='withdrawal').reduce((s,t)=>s+t.total,0)).reduce((s,v)=>s+v,0);
-  const weekPct=pctChange(weekTotal,prevWeekTotal);
-  const prodMap={};
-  sales.forEach(t=>{if(t.items)t.items.forEach(i=>{if(!prodMap[i.name])prodMap[i.name]={name:i.name,qty:0,revenue:0};prodMap[i.name].qty+=i.qty;prodMap[i.name].revenue+=i.price*i.qty;});});
-  const topProds=Object.values(prodMap).sort((a,b)=>b.qty-a.qty).slice(0,5);
-  const maxQty=topProds.length?topProds[0].qty:1;
-  const catMap={};
-  sales.forEach(t=>{if(t.items)t.items.forEach(i=>{const cn=i.catName||'Otros';if(!catMap[cn])catMap[cn]={name:cn,total:0,count:0,color:i.catColor||'#6b7280'};catMap[cn].total+=i.price*i.qty;catMap[cn].count+=i.qty;});});
-  const catData=Object.values(catMap).sort((a,b)=>b.total-a.total);
-  const maxCatTotal=catData.length?catData[0].total:1;
-  const wdByReason={basura:0,limpieza:0,proveedor:0};
-  wds.forEach(t=>{if(wdByReason[t.reason]!==undefined)wdByReason[t.reason]+=t.total;});
-  const largest=sales.length?sales.reduce((m,t)=>t.total>m.total?t:m,sales[0]):null;
-  const manTotal=sales.filter(t=>t.type==='manual').reduce((s,t)=>s+t.total,0);
-  const prodTotal=sales.filter(t=>t.type==='sale').reduce((s,t)=>s+t.total,0);
-  const firstTxn=dayTxns.length?dayTxns[0]:null;
-  const lastTxn=dayTxns.length?dayTxns[dayTxns.length-1]:null;
-  const cashPct=totalSales?Math.round(cashSales/totalSales*100):0;
-  const cardPct=totalSales?100-cashPct:0;
+  var d=S.rptDate;
+  var dayTxns=txns.filter(function(t){return t.date===d;});
+  var sales=dayTxns.filter(function(t){return t.type!=='withdrawal';});
+  var wds=dayTxns.filter(function(t){return t.type==='withdrawal';});
+  var totalSales=sales.reduce(function(s,t){return s+t.total;},0);
+  var cashSales=sales.filter(function(t){return t.method==='cash';}).reduce(function(s,t){return s+t.total;},0);
+  var cardSales=sales.filter(function(t){return t.method==='card';}).reduce(function(s,t){return s+t.total;},0);
+  var totalWd=wds.reduce(function(s,t){return s+t.total;},0);
+  var cashInRegister=cashSales-totalWd;
+  var avgTicket=sales.length?totalSales/sales.length:0;
+  var itemsSold=sales.reduce(function(s,t){return s+(t.items?t.items.reduce(function(a,i){return a+i.qty;},0):0);},0);
+  var yDate=dateAdd(d,-1);
+  var yTotal=txns.filter(function(t){return t.date===yDate&&t.type!=='withdrawal';}).reduce(function(s,t){return s+t.total;},0);
+  var yPct=pctChange(totalSales,yTotal);
+  var lwDate=dateAdd(d,-7);
+  var lwTotal=txns.filter(function(t){return t.date===lwDate&&t.type!=='withdrawal';}).reduce(function(s,t){return s+t.total;},0);
+  var lwPct=pctChange(totalSales,lwTotal);
+  var hourly={};for(var h=7;h<=22;h++)hourly[h]={total:0,count:0};
+  sales.forEach(function(t){var hh=parseInt(t.time?t.time.split(':')[0]:'0');if(hourly[hh]!==undefined){hourly[hh].total+=t.total;hourly[hh].count++;}});
+  var maxHourly=Math.max.apply(null,Object.values(hourly).map(function(h){return h.total;}).concat([1]));
+  var peakHour=7;Object.entries(hourly).forEach(function(e){if(e[1].total>hourly[peakHour].total)peakHour=parseInt(e[0]);});
+  var weekDays=getWeekDays(d);
+  var dayLabels=['L','M','X','J','V','S','D'];
+  var weekData=weekDays.map(function(wd){return txns.filter(function(t){return t.date===wd&&t.type!=='withdrawal';}).reduce(function(s,t){return s+t.total;},0);});
+  var maxWeek=Math.max.apply(null,weekData.concat([1]));
+  var weekTotal=weekData.reduce(function(s,v){return s+v;},0);
+  var prevWeekDays=weekDays.map(function(wd){return dateAdd(wd,-7);});
+  var prevWeekTotal=prevWeekDays.map(function(wd){return txns.filter(function(t){return t.date===wd&&t.type!=='withdrawal';}).reduce(function(s,t){return s+t.total;},0);}).reduce(function(s,v){return s+v;},0);
+  var weekPct=pctChange(weekTotal,prevWeekTotal);
+  var prodMap={};
+  sales.forEach(function(t){if(t.items)t.items.forEach(function(i){if(!prodMap[i.name])prodMap[i.name]={name:i.name,qty:0,revenue:0};prodMap[i.name].qty+=i.qty;prodMap[i.name].revenue+=i.price*i.qty;});});
+  var topProds=Object.values(prodMap).sort(function(a,b){return b.qty-a.qty;}).slice(0,5);
+  var maxQty=topProds.length?topProds[0].qty:1;
+  var catMap={};
+  sales.forEach(function(t){if(t.items)t.items.forEach(function(i){var cn=i.catName||'Otros';if(!catMap[cn])catMap[cn]={name:cn,total:0,count:0,color:i.catColor||'#6b7280'};catMap[cn].total+=i.price*i.qty;catMap[cn].count+=i.qty;});});
+  var catData=Object.values(catMap).sort(function(a,b){return b.total-a.total;});
+  var maxCatTotal=catData.length?catData[0].total:1;
+  var wdByReason={basura:0,limpieza:0,proveedor:0};
+  wds.forEach(function(t){if(wdByReason[t.reason]!==undefined)wdByReason[t.reason]+=t.total;});
+  var largest=sales.length?sales.reduce(function(m,t){return t.total>m.total?t:m;},sales[0]):null;
+  var manTotal=sales.filter(function(t){return t.type==='manual';}).reduce(function(s,t){return s+t.total;},0);
+  var prodTotal=sales.filter(function(t){return t.type==='sale';}).reduce(function(s,t){return s+t.total;},0);
+  var firstTxn=dayTxns.length?dayTxns[0]:null;
+  var lastTxn=dayTxns.length?dayTxns[dayTxns.length-1]:null;
+  var cashPct=totalSales?Math.round(cashSales/totalSales*100):0;
+  var cardPct=totalSales?100-cashPct:0;
 
-  return`<div class="rpt-view">
-    <div class="rpt-header">
-      <div class="rpt-nav">
-        <button data-action="rpt-prev">◀</button>
-        <div class="rpt-date">${dateName(d)}</div>
-        <button data-action="rpt-next">▶</button>
-      </div>
-      <button class="rpt-today" data-action="rpt-today">Hoy</button>
-    </div>
-    <div class="rpt-body">
-      <div class="rpt-cards">
-        <div class="rpt-card" style="border-color:#6366f1"><div class="rc-icon">💰</div><div class="rc-label">Ventas</div><div class="rc-value">${fmt(totalSales)}</div><div class="rc-sub">${sales.length} ops</div></div>
-        <div class="rpt-card" style="border-color:#10b981"><div class="rc-icon">💵</div><div class="rc-label">Efectivo</div><div class="rc-value">${fmt(cashSales)}</div><div class="rc-sub">${cashPct}%</div></div>
-        <div class="rpt-card" style="border-color:#3b82f6"><div class="rc-icon">💳</div><div class="rc-label">Tarjeta</div><div class="rc-value">${fmt(cardSales)}</div><div class="rc-sub">${cardPct}%</div></div>
-        <div class="rpt-card" style="border-color:#f59e0b"><div class="rc-icon">📤</div><div class="rc-label">Retiros</div><div class="rc-value">${fmt(totalWd)}</div><div class="rc-sub">${wds.length} ret</div></div>
-        <div class="rpt-card" style="border-color:#8b5cf6"><div class="rc-icon">🏦</div><div class="rc-label">En Caja</div><div class="rc-value">${fmt(cashInRegister)}</div><div class="rc-sub">Neto</div></div>
-      </div>
-      <div class="rpt-kpis">
-        <div class="rpt-kpi"><div class="kpi-label">🎫 Ticket Prom</div><div class="kpi-value">${fmt(avgTicket)}</div><div class="kpi-sub">${itemsSold} arts</div></div>
-        <div class="rpt-kpi"><div class="kpi-label">📅 vs Ayer</div><div class="kpi-value">${fmt(yTotal)}</div><div class="kpi-sub ${yPct>=0?'kpi-up':'kpi-down'}">${yPct>=0?'▲':'▼'} ${Math.abs(yPct).toFixed(1)}%</div></div>
-        <div class="rpt-kpi"><div class="kpi-label">📆 vs Sem Pasada</div><div class="kpi-value">${fmt(lwTotal)}</div><div class="kpi-sub ${lwPct>=0?'kpi-up':'kpi-down'}">${lwPct>=0?'▲':'▼'} ${Math.abs(lwPct).toFixed(1)}%</div></div>
-        <div class="rpt-kpi"><div class="kpi-label">⭐ Mayor Venta</div><div class="kpi-value">${largest?fmt(largest.total):'—'}</div><div class="kpi-sub">${largest?largest.time:'—'}</div></div>
-      </div>
-      <div class="rpt-charts">
-        <div class="chart-box">
-          <div class="chart-title">⏰ Por Hora <span class="chart-badge">🔥 ${peakHour}h</span></div>
-          <div class="chart-bars">${Object.entries(hourly).map(([h,v])=>{
-            const pct=maxHourly?v.total/maxHourly*100:0;
-            return`<div class="chart-bar-col"><div class="chart-bar ${parseInt(h)===peakHour?'peak':''}" style="height:${Math.max(pct,2)}%">${v.total>0?'<span class="chart-bar-val">'+Math.round(v.total)+'</span>':''}</div><div class="chart-bar-label">${h}</div></div>`;
-          }).join('')}</div>
-        </div>
-        <div class="chart-box">
-          <div class="chart-title">📊 Semana <span class="chart-badge">${fmt(weekTotal)} ${weekPct>=0?'▲':'▼'}${Math.abs(weekPct).toFixed(0)}%</span></div>
-          <div class="chart-bars">${weekData.map((v,i)=>{
-            const pct=maxWeek?v/maxWeek*100:0;const isToday=weekDays[i]===d;
-            return`<div class="chart-bar-col"><div class="chart-bar ${isToday?'today-bar':''}" style="height:${Math.max(pct,2)}%">${v>0?'<span class="chart-bar-val">'+Math.round(v)+'</span>':''}</div><div class="chart-bar-label" style="${isToday?'font-weight:800;color:#f59e0b':''}">${dayLabels[i]}</div></div>`;
-          }).join('')}</div>
-        </div>
-      </div>
-      <div class="rpt-insights">
-        <div class="insight-box">
-          <div class="insight-title">🏆 Top Productos</div>
-          ${topProds.length?topProds.map((p,i)=>{
-            const colors=['#f59e0b','#94a3b8','#b45309','#6366f1','#6366f1'];
-            return`<div class="top-prod">
-              <div class="rank" style="background:${colors[i]}">${i+1}</div>
-              <div class="tp-name">${p.name}</div>
-              <div class="tp-qty">${p.qty}u</div>
-              <div class="tp-rev">${fmt(p.revenue)}</div>
-            </div>
-            <div class="progress-bar"><div class="progress-fill" style="width:${p.qty/maxQty*100}%;background:${colors[i]}"></div></div>`;
-          }).join(''):'<div class="empty-state"><span class="es-text">Sin datos</span></div>'}
-        </div>
-        <div class="insight-box">
-          <div class="insight-title">📁 Por Categoría</div>
-          ${catData.length?catData.map(c=>`<div class="cat-row">
-            <div class="cr-dot" style="background:${c.color}"></div>
-            <div class="cr-name">${c.name}</div>
-            <div class="cr-total">${fmt(c.total)}</div>
-          </div>
-          <div class="progress-bar"><div class="progress-fill" style="width:${c.total/maxCatTotal*100}%;background:${c.color}"></div></div>`).join(''):'<div class="empty-state"><span class="es-text">Sin datos</span></div>'}
-        </div>
-        <div class="insight-box">
-          <div class="insight-title">📋 Extra</div>
-          <div class="extra-card">
-            <div class="ec-label">Tipo</div>
-            <div style="display:flex;gap:6px;font-size:11px;margin-top:2px">
-              <span>📦 ${fmt(prodTotal)}</span>
-              <span>✏️ ${fmt(manTotal)}</span>
-            </div>
-          </div>
-          <div class="extra-card">
-            <div class="ec-label">Retiros</div>
-            <div style="font-size:10px;margin-top:2px">
-              🗑️ ${fmt(wdByReason.basura)} · 🧹 ${fmt(wdByReason.limpieza)} · 🚛 ${fmt(wdByReason.proveedor)}
-            </div>
-          </div>
-          <div class="extra-card">
-            <div class="ec-label">Pago</div>
-            <div class="donut-wrap">
-              <svg width="50" height="50" viewBox="0 0 36 36">
-                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e2e8f0" stroke-width="3"/>
-                ${totalSales>0?`<circle cx="18" cy="18" r="15.9" fill="none" stroke="#10b981" stroke-width="3" stroke-dasharray="${cashPct} ${100-cashPct}" stroke-dashoffset="25"/>
-                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#3b82f6" stroke-width="3" stroke-dasharray="${cardPct} ${100-cardPct}" stroke-dashoffset="${25-cashPct}"/>`:''}
-              </svg>
-              <div class="donut-legend">
-                <div class="dl-item"><div class="dl-dot" style="background:#10b981"></div>${cashPct}% Ef</div>
-                <div class="dl-item"><div class="dl-dot" style="background:#3b82f6"></div>${cardPct}% Tj</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="rpt-txns">
-        <div class="txn-title">📝 Transacciones <span style="font-size:10px;color:#94a3b8;font-weight:500">${firstTxn?firstTxn.time+' — '+(lastTxn?lastTxn.time:''):''} · ${dayTxns.length} reg</span></div>
-        <div class="txn-list">${dayTxns.length?dayTxns.map(t=>{
-          const isWd=t.type==='withdrawal';
-          const methodClass=isWd?'wd':t.method;
-          const methodLabel=isWd?'Retiro':t.method==='cash'?'Efvo':'Tarj';
-          let desc=isWd?('Retiro: '+t.reason):(t.type==='sale'?(t.items?t.items.map(i=>i.name+'×'+i.qty).join(', '):'Venta'):'Manual'+(t.description?' - '+t.description:''));
-          return`<div class="txn-item">
-            <div class="txn-time">${t.time||''}</div>
-            <div class="txn-type">${desc}</div>
-            <span class="txn-method ${methodClass}">${methodLabel}</span>
-            <div class="txn-total" style="color:${isWd?'#ef4444':'#1e293b'}">${isWd?'-':''}${fmt(t.total)}</div>
-          </div>`;
-        }).join(''):'<div class="empty-state"><span class="es-icon">📝</span><span class="es-text">Sin transacciones</span></div>'}</div>
-      </div>
-    </div>
-  </div>`;
+  return '<div class="rpt-view">'+
+    '<div class="rpt-header">'+
+      '<div class="rpt-nav">'+
+        '<button data-action="rpt-prev">◀</button>'+
+        '<div class="rpt-date">'+dateName(d)+'</div>'+
+        '<button data-action="rpt-next">▶</button>'+
+      '</div>'+
+      '<button class="rpt-today" data-action="rpt-today">Hoy</button>'+
+    '</div>'+
+    '<div class="rpt-body">'+
+      '<div class="rpt-cards">'+
+        '<div class="rpt-card" style="border-color:#6366f1"><div class="rc-icon">💰</div><div class="rc-label">Ventas</div><div class="rc-value">'+fmt(totalSales)+'</div><div class="rc-sub">'+sales.length+' ops</div></div>'+
+        '<div class="rpt-card" style="border-color:#10b981"><div class="rc-icon">💵</div><div class="rc-label">Efectivo</div><div class="rc-value">'+fmt(cashSales)+'</div><div class="rc-sub">'+cashPct+'%</div></div>'+
+        '<div class="rpt-card" style="border-color:#3b82f6"><div class="rc-icon">💳</div><div class="rc-label">Tarjeta</div><div class="rc-value">'+fmt(cardSales)+'</div><div class="rc-sub">'+cardPct+'%</div></div>'+
+        '<div class="rpt-card" style="border-color:#f59e0b"><div class="rc-icon">📤</div><div class="rc-label">Retiros</div><div class="rc-value">'+fmt(totalWd)+'</div><div class="rc-sub">'+wds.length+' ret</div></div>'+
+        '<div class="rpt-card" style="border-color:#8b5cf6"><div class="rc-icon">🏦</div><div class="rc-label">En Caja</div><div class="rc-value">'+fmt(cashInRegister)+'</div><div class="rc-sub">Neto</div></div>'+
+      '</div>'+
+      '<div class="rpt-kpis">'+
+        '<div class="rpt-kpi"><div class="kpi-label">🎫 Ticket Prom</div><div class="kpi-value">'+fmt(avgTicket)+'</div><div class="kpi-sub">'+itemsSold+' arts</div></div>'+
+        '<div class="rpt-kpi"><div class="kpi-label">📅 vs Ayer</div><div class="kpi-value">'+fmt(yTotal)+'</div><div class="kpi-sub '+(yPct>=0?'kpi-up':'kpi-down')+'">'+(yPct>=0?'▲':'▼')+' '+Math.abs(yPct).toFixed(1)+'%</div></div>'+
+        '<div class="rpt-kpi"><div class="kpi-label">📆 vs Sem Pasada</div><div class="kpi-value">'+fmt(lwTotal)+'</div><div class="kpi-sub '+(lwPct>=0?'kpi-up':'kpi-down')+'">'+(lwPct>=0?'▲':'▼')+' '+Math.abs(lwPct).toFixed(1)+'%</div></div>'+
+        '<div class="rpt-kpi"><div class="kpi-label">⭐ Mayor Venta</div><div class="kpi-value">'+(largest?fmt(largest.total):'—')+'</div><div class="kpi-sub">'+(largest?largest.time:'—')+'</div></div>'+
+      '</div>'+
+      '<div class="rpt-charts">'+
+        '<div class="chart-box">'+
+          '<div class="chart-title">⏰ Por Hora <span class="chart-badge">🔥 '+peakHour+'h</span></div>'+
+          '<div class="chart-bars">'+Object.entries(hourly).map(function(e){
+            var pct=maxHourly?e[1].total/maxHourly*100:0;
+            return '<div class="chart-bar-col"><div class="chart-bar '+(parseInt(e[0])===peakHour?'peak':'')+'" style="height:'+Math.max(pct,2)+'%">'+(e[1].total>0?'<span class="chart-bar-val">'+Math.round(e[1].total)+'</span>':'')+'</div><div class="chart-bar-label">'+e[0]+'</div></div>';
+          }).join('')+'</div>'+
+        '</div>'+
+        '<div class="chart-box">'+
+          '<div class="chart-title">📊 Semana <span class="chart-badge">'+fmt(weekTotal)+' '+(weekPct>=0?'▲':'▼')+Math.abs(weekPct).toFixed(0)+'%</span></div>'+
+          '<div class="chart-bars">'+weekData.map(function(v,i){
+            var pct=maxWeek?v/maxWeek*100:0;var isToday=weekDays[i]===d;
+            return '<div class="chart-bar-col"><div class="chart-bar '+(isToday?'today-bar':'')+'" style="height:'+Math.max(pct,2)+'%">'+(v>0?'<span class="chart-bar-val">'+Math.round(v)+'</span>':'')+'</div><div class="chart-bar-label" style="'+(isToday?'font-weight:800;color:#f59e0b':'')+'">'+dayLabels[i]+'</div></div>';
+          }).join('')+'</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="rpt-insights">'+
+        '<div class="insight-box">'+
+          '<div class="insight-title">🏆 Top Productos</div>'+
+          (topProds.length?topProds.map(function(p,i){
+            var colors=['#f59e0b','#94a3b8','#b45309','#6366f1','#6366f1'];
+            return '<div class="top-prod"><div class="rank" style="background:'+colors[i]+'">'+(i+1)+'</div><div class="tp-name">'+p.name+'</div><div class="tp-qty">'+p.qty+'u</div><div class="tp-rev">'+fmt(p.revenue)+'</div></div><div class="progress-bar"><div class="progress-fill" style="width:'+p.qty/maxQty*100+'%;background:'+colors[i]+'"></div></div>';
+          }).join(''):'<div class="empty-state"><span class="es-text">Sin datos</span></div>')+
+        '</div>'+
+        '<div class="insight-box">'+
+          '<div class="insight-title">📁 Por Categoría</div>'+
+          (catData.length?catData.map(function(c){return '<div class="cat-row"><div class="cr-dot" style="background:'+c.color+'"></div><div class="cr-name">'+c.name+'</div><div class="cr-total">'+fmt(c.total)+'</div></div><div class="progress-bar"><div class="progress-fill" style="width:'+c.total/maxCatTotal*100+'%;background:'+c.color+'"></div></div>';}).join(''):'<div class="empty-state"><span class="es-text">Sin datos</span></div>')+
+        '</div>'+
+        '<div class="insight-box">'+
+          '<div class="insight-title">📋 Extra</div>'+
+          '<div class="extra-card"><div class="ec-label">Tipo</div><div style="display:flex;gap:6px;font-size:11px;margin-top:2px"><span>📦 '+fmt(prodTotal)+'</span><span>✏️ '+fmt(manTotal)+'</span></div></div>'+
+          '<div class="extra-card"><div class="ec-label">Retiros</div><div style="font-size:10px;margin-top:2px">🗑️ '+fmt(wdByReason.basura)+' · 🧹 '+fmt(wdByReason.limpieza)+' · 🚛 '+fmt(wdByReason.proveedor)+'</div></div>'+
+          '<div class="extra-card"><div class="ec-label">Pago</div>'+
+            '<div class="donut-wrap">'+
+              '<svg width="50" height="50" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9" fill="none" stroke="#e2e8f0" stroke-width="3"/>'+
+              (totalSales>0?'<circle cx="18" cy="18" r="15.9" fill="none" stroke="#10b981" stroke-width="3" stroke-dasharray="'+cashPct+' '+(100-cashPct)+'" stroke-dashoffset="25"/><circle cx="18" cy="18" r="15.9" fill="none" stroke="#3b82f6" stroke-width="3" stroke-dasharray="'+cardPct+' '+(100-cardPct)+'" stroke-dashoffset="'+(25-cashPct)+'"/>':'')+
+              '</svg>'+
+              '<div class="donut-legend"><div class="dl-item"><div class="dl-dot" style="background:#10b981"></div>'+cashPct+'% Ef</div><div class="dl-item"><div class="dl-dot" style="background:#3b82f6"></div>'+cardPct+'% Tj</div></div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="rpt-txns">'+
+        '<div class="txn-title">📝 Transacciones <span style="font-size:10px;color:#94a3b8;font-weight:500">'+(firstTxn?firstTxn.time+' — '+(lastTxn?lastTxn.time:''):'')+' · '+dayTxns.length+' reg</span></div>'+
+        '<div class="txn-list">'+(dayTxns.length?dayTxns.map(function(t){
+          var isWd=t.type==='withdrawal';
+          var methodClass=isWd?'wd':t.method;
+          var methodLabel=isWd?'Retiro':t.method==='cash'?'Efvo':'Tarj';
+          var desc=isWd?('Retiro: '+t.reason):(t.type==='sale'?(t.items?t.items.map(function(i){return i.name+'×'+i.qty;}).join(', '):'Venta'):'Manual'+(t.description?' - '+t.description:''));
+          return '<div class="txn-item"><div class="txn-time">'+(t.time||'')+'</div><div class="txn-type">'+desc+'</div><span class="txn-method '+methodClass+'">'+methodLabel+'</span><div class="txn-total" style="color:'+(isWd?'#ef4444':'#1e293b')+'">'+(isWd?'-':'')+fmt(t.total)+'</div></div>';
+        }).join(''):'<div class="empty-state"><span class="es-icon">📝</span><span class="es-text">Sin transacciones</span></div>')+'</div>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
 }
 
-// ==================== NUMPAD ====================
-function renderNumpad(target){
-  return`<div class="numpad">
-    ${['1','2','3','4','5','6','7','8','9','.','0','back'].map(k=>{
-      if(k==='back')return`<button class="key-back" data-action="numpad" data-target="${target}" data-value="back">⌫</button>`;
-      return`<button data-action="numpad" data-target="${target}" data-value="${k}">${k}</button>`;
-    }).join('')}
-  </div>`;
+// ==================== HELPERS ====================
+function escHTML(str){
+  if(!str)return '';
+  return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 // ==================== EVENTS ====================
 function afterRender(){
-  const catSel=document.getElementById('db-cat-sel');
+  var catSel=document.getElementById('db-cat-sel');
   if(catSel)catSel.addEventListener('change',function(){S.dbFormCatId=this.value;S.dbFormSubId='';render();});
-  const subSel=document.getElementById('db-sub-sel');
+  var subSel=document.getElementById('db-sub-sel');
   if(subSel)subSel.addEventListener('change',function(){S.dbFormSubId=this.value;});
 }
 
 document.addEventListener('click',function(e){
-  const btn=e.target.closest('[data-action]');
+  var btn=e.target.closest('[data-action]');
   if(!btn)return;
-  const action=btn.dataset.action;
-  const value=btn.dataset.value;
-  const id=btn.dataset.id?parseInt(btn.dataset.id):null;
-  const target=btn.dataset.target;
+  preserveInputs();
+  var action=btn.dataset.action;
+  var value=btn.dataset.value;
+  var id=btn.dataset.id?parseInt(btn.dataset.id):null;
+  var target=btn.dataset.target;
 
   switch(action){
     case 'nav':
       S.view=value;
-      if(value==='manual'){S.manMode='input';S.manNumpad='';S.manPaid='';S.manDesc='';S.manMethod='cash';}
+      if(value==='manual'){S.manMode='input';S.manStep=1;S.manNumpad='';S.manPaid='';S.manDesc='';S.manMethod='cash';}
       if(value==='withdrawal'){S.wdMode='input';S.wdNumpad='';}
       render();break;
     case 'sel-cat':S.selCat=value==='all'?'all':parseInt(value);render();break;
     case 'add-cart':{
-      const prod=prods.find(p=>p.id===parseInt(btn.closest('[data-id]').dataset.id));
+      var prodId=parseInt(btn.dataset.id);
+      var prod=prods.find(function(p){return p.id===prodId;});
       if(!prod)break;
-      const existing=S.cart.find(c=>c.prodId===prod.id);
-      const cat=cats.find(c=>c.id===prod.catId);
-      const sub=subs.find(s=>s.id===prod.subId);
+      var existing=S.cart.find(function(c){return c.prodId===prod.id;});
+      var cat=cats.find(function(c){return c.id===prod.catId;});
+      var sub=subs.find(function(s){return s.id===prod.subId;});
       if(existing){existing.qty++;}
       else{S.cart.push({prodId:prod.id,name:prod.name,price:prod.price,qty:1,catName:cat?cat.name:'',catColor:cat?cat.color:'#6b7280',subName:sub?sub.name:''});}
       render();break;
     }
-    case 'cart-plus':{const item=S.cart.find(c=>c.prodId===id);if(item)item.qty++;render();break;}
-    case 'cart-minus':{const idx=S.cart.findIndex(c=>c.prodId===id);if(idx>-1){S.cart[idx].qty--;if(S.cart[idx].qty<=0)S.cart.splice(idx,1);}render();break;}
-    case 'cart-del':{S.cart=S.cart.filter(c=>c.prodId!==id);render();break;}
+    case 'cart-plus':{var item=S.cart.find(function(c){return c.prodId===id;});if(item)item.qty++;render();break;}
+    case 'cart-minus':{var idx=S.cart.findIndex(function(c){return c.prodId===id;});if(idx>-1){S.cart[idx].qty--;if(S.cart[idx].qty<=0)S.cart.splice(idx,1);}render();break;}
+    case 'cart-del':{S.cart=S.cart.filter(function(c){return c.prodId!==id;});render();break;}
     case 'clear-cart':S.cart=[];render();break;
     case 'go-pay':if(S.cart.length){S.tpvMode='pay';S.numpad='';S.payMethod='cash';render();}break;
     case 'pay-method':S.payMethod=value;S.numpad='';render();break;
     case 'quick-amt':S.numpad=String(parseFloat(value));render();break;
     case 'cancel-pay':S.tpvMode='browse';render();break;
     case 'confirm-pay':{
-      const total=getCartTotal();
-      const paid=S.payMethod==='cash'?parseFloat(S.numpad)||0:total;
+      var total=getCartTotal();
+      var paid=S.payMethod==='cash'?parseFloat(S.numpad)||0:total;
       if(S.payMethod==='cash'&&paid<total)break;
-      txns.push({id:Date.now(),date:todayStr(),time:timeStr(),type:'sale',items:S.cart.map(i=>({...i})),total,method:S.payMethod,paid,change:Math.round((paid-total)*100)/100});
+      txns.push({id:Date.now(),date:todayStr(),time:timeStr(),type:'sale',items:S.cart.map(function(i){return {prodId:i.prodId,name:i.name,price:i.price,qty:i.qty,catName:i.catName,catColor:i.catColor};}),total:total,method:S.payMethod,paid:paid,change:Math.round((paid-total)*100)/100});
       save();
       S.tpvMode=S.payMethod==='cash'?'change':'success';
       render();break;
     }
     case 'new-sale':S.cart=[];S.tpvMode='browse';S.numpad='';render();break;
-    case 'man-method':S.manMethod=value;S.manPaid='';render();break;
-    case 'man-quick':S.manPaid=String(parseFloat(value));render();break;
-    case 'man-confirm':{
-      const desc=document.getElementById('man-desc');S.manDesc=desc?desc.value:'';
-      const total=parseFloat(S.manNumpad)||0;if(total<=0)break;
-      const paid=S.manMethod==='cash'?(parseFloat(S.manPaid)||total):total;
-      if(S.manMethod==='cash'&&paid<total){alert('Monto insuficiente');break;}
-      txns.push({id:Date.now(),date:todayStr(),time:timeStr(),type:'manual',items:[],total,method:S.manMethod,paid,change:Math.round((paid-total)*100)/100,description:S.manDesc});
-      save();
-      S.manMode=S.manMethod==='cash'?'change':'success';
+
+    // MANUAL - Step 1
+    case 'man-go-cash':{
+      var amt1=parseFloat(S.manNumpad)||0;
+      if(amt1<=0)break;
+      S.manMethod='cash';S.manStep=2;S.manPaid='';
       render();break;
     }
-    case 'man-new':S.manMode='input';S.manNumpad='';S.manPaid='';S.manDesc='';render();break;
+    case 'man-go-card':{
+      var amt2=parseFloat(S.manNumpad)||0;
+      if(amt2<=0)break;
+      S.manMethod='card';
+      txns.push({id:Date.now(),date:todayStr(),time:timeStr(),type:'manual',items:[],total:amt2,method:'card',paid:amt2,change:0,description:S.manDesc});
+      save();
+      S.manMode='success';
+      render();break;
+    }
+    // MANUAL - Step 2
+    case 'man-back':S.manStep=1;S.manPaid='';render();break;
+    case 'man-quick':S.manPaid=String(parseFloat(value));render();break;
+    case 'man-confirm-cash':{
+      var manTotal=parseFloat(S.manNumpad)||0;
+      var manPaid=parseFloat(S.manPaid)||0;
+      if(manTotal<=0||manPaid<manTotal)break;
+      txns.push({id:Date.now(),date:todayStr(),time:timeStr(),type:'manual',items:[],total:manTotal,method:'cash',paid:manPaid,change:Math.round((manPaid-manTotal)*100)/100,description:S.manDesc});
+      save();
+      S.manMode='change';
+      render();break;
+    }
+    case 'man-new':S.manMode='input';S.manStep=1;S.manNumpad='';S.manPaid='';S.manDesc='';render();break;
+
+    // WITHDRAWAL
     case 'wd-reason':S.wdReason=value;render();break;
     case 'wd-confirm':{
-      const amt=parseFloat(S.wdNumpad)||0;if(amt<=0)break;
-      txns.push({id:Date.now(),date:todayStr(),time:timeStr(),type:'withdrawal',items:[],total:amt,method:'cash',paid:0,change:0,reason:S.wdReason});
+      var wdAmt=parseFloat(S.wdNumpad)||0;if(wdAmt<=0)break;
+      txns.push({id:Date.now(),date:todayStr(),time:timeStr(),type:'withdrawal',items:[],total:wdAmt,method:'cash',paid:0,change:0,reason:S.wdReason});
       save();S.wdMode='success';render();break;
     }
     case 'wd-new':S.wdMode='input';S.wdNumpad='';render();break;
+
+    // NUMPAD
     case 'numpad':numpadPress(target,value);break;
+
+    // DATABASE
     case 'db-tab':S.dbTab=value;S.dbEditing=null;S.dbFormName='';S.dbFormColor='#ef4444';S.dbFormCatId=cats.length?String(cats[0].id):'';S.dbFormSubId='';S.dbPriceNumpad='';render();break;
     case 'db-color':S.dbFormColor=value;render();break;
     case 'db-cancel':S.dbEditing=null;S.dbFormName='';S.dbFormColor='#ef4444';S.dbFormCatId=cats.length?String(cats[0].id):'';S.dbFormSubId='';S.dbPriceNumpad='';render();break;
     case 'db-save-cat':{
-      const name=(document.getElementById('db-name')||{}).value||'';if(!name.trim())break;
-      if(S.dbEditing){const c=cats.find(x=>x.id===S.dbEditing);if(c){c.name=name.trim();c.color=S.dbFormColor;}}
+      var name=(document.getElementById('db-name')||{}).value||'';if(!name.trim())break;
+      if(S.dbEditing){var c=cats.find(function(x){return x.id===S.dbEditing;});if(c){c.name=name.trim();c.color=S.dbFormColor;}}
       else{cats.push({id:nextId(cats),name:name.trim(),color:S.dbFormColor});}
       save();S.dbEditing=null;S.dbFormName='';render();break;
     }
-    case 'db-edit-cat':{const c=cats.find(x=>x.id===id);if(c){S.dbEditing=c.id;S.dbFormName=c.name;S.dbFormColor=c.color;}render();break;}
-    case 'db-del-cat':{cats=cats.filter(c=>c.id!==id);subs=subs.filter(s=>s.catId!==id);prods=prods.filter(p=>p.catId!==id);save();render();break;}
+    case 'db-edit-cat':{var ec=cats.find(function(x){return x.id===id;});if(ec){S.dbEditing=ec.id;S.dbFormName=ec.name;S.dbFormColor=ec.color;}render();break;}
+    case 'db-del-cat':{if(!confirm('¿Eliminar categoría y sus productos?'))break;cats=cats.filter(function(c){return c.id!==id;});subs=subs.filter(function(s){return s.catId!==id;});prods=prods.filter(function(p){return p.catId!==id;});save();render();break;}
     case 'db-save-sub':{
-      const name=(document.getElementById('db-name')||{}).value||'';
-      const catId=parseInt((document.getElementById('db-cat-sel')||{}).value)||0;
-      if(!name.trim()||!catId)break;
-      if(S.dbEditing){const s=subs.find(x=>x.id===S.dbEditing);if(s){s.name=name.trim();s.catId=catId;}}
-      else{subs.push({id:nextId(subs),name:name.trim(),catId});}
+      var sname=(document.getElementById('db-name')||{}).value||'';
+      var catId=parseInt((document.getElementById('db-cat-sel')||{}).value)||0;
+      if(!sname.trim()||!catId)break;
+      if(S.dbEditing){var es=subs.find(function(x){return x.id===S.dbEditing;});if(es){es.name=sname.trim();es.catId=catId;}}
+      else{subs.push({id:nextId(subs),name:sname.trim(),catId:catId});}
       save();S.dbEditing=null;S.dbFormName='';render();break;
     }
-    case 'db-edit-sub':{const s=subs.find(x=>x.id===id);if(s){S.dbEditing=s.id;S.dbFormName=s.name;S.dbFormCatId=String(s.catId);}render();break;}
-    case 'db-del-sub':{subs=subs.filter(s=>s.id!==id);prods.forEach(p=>{if(p.subId===id)p.subId=0;});save();render();break;}
+    case 'db-edit-sub':{var esb=subs.find(function(x){return x.id===id;});if(esb){S.dbEditing=esb.id;S.dbFormName=esb.name;S.dbFormCatId=String(esb.catId);}render();break;}
+    case 'db-del-sub':{subs=subs.filter(function(s){return s.id!==id;});prods.forEach(function(p){if(p.subId===id)p.subId=0;});save();render();break;}
     case 'db-save-prod':{
-      const name=(document.getElementById('db-name')||{}).value||'';
-      const catId=parseInt((document.getElementById('db-cat-sel')||{}).value)||0;
-      const subId=parseInt((document.getElementById('db-sub-sel')||{}).value)||0;
-      const price=parseFloat(S.dbPriceNumpad)||0;
-      if(!name.trim()||!catId||price<=0)break;
-      if(S.dbEditing){const p=prods.find(x=>x.id===S.dbEditing);if(p){p.name=name.trim();p.catId=catId;p.subId=subId;p.price=price;}}
-      else{prods.push({id:nextId(prods),name:name.trim(),catId,subId,price});}
+      var pname=(document.getElementById('db-name')||{}).value||'';
+      var pCatId=parseInt((document.getElementById('db-cat-sel')||{}).value)||0;
+      var pSubId=parseInt((document.getElementById('db-sub-sel')||{}).value)||0;
+      var price=parseFloat(S.dbPriceNumpad)||0;
+      if(!pname.trim()||!pCatId||price<=0)break;
+      if(S.dbEditing){var ep=prods.find(function(x){return x.id===S.dbEditing;});if(ep){ep.name=pname.trim();ep.catId=pCatId;ep.subId=pSubId;ep.price=price;}}
+      else{prods.push({id:nextId(prods),name:pname.trim(),catId:pCatId,subId:pSubId,price:price});}
       save();S.dbEditing=null;S.dbFormName='';S.dbPriceNumpad='';render();break;
     }
-    case 'db-edit-prod':{const p=prods.find(x=>x.id===id);if(p){S.dbEditing=p.id;S.dbFormName=p.name;S.dbFormCatId=String(p.catId);S.dbFormSubId=String(p.subId||'');S.dbPriceNumpad=String(p.price);}render();break;}
-    case 'db-del-prod':{prods=prods.filter(p=>p.id!==id);S.cart=S.cart.filter(c=>prods.find(p=>p.id===c.prodId));save();render();break;}
+    case 'db-edit-prod':{var epr=prods.find(function(x){return x.id===id;});if(epr){S.dbEditing=epr.id;S.dbFormName=epr.name;S.dbFormCatId=String(epr.catId);S.dbFormSubId=String(epr.subId||'');S.dbPriceNumpad=String(epr.price);}render();break;}
+    case 'db-del-prod':{prods=prods.filter(function(p){return p.id!==id;});S.cart=S.cart.filter(function(c){return prods.find(function(p){return p.id===c.prodId;});});save();render();break;}
+
+    // CSV
     case 'csv-import-add':case 'csv-import-replace':{
-      const mode=action==='csv-import-replace'?'replace':'add';
-      const fi=document.getElementById('csv-file-input');fi.dataset.mode=mode;fi.value='';fi.click();break;
+      var mode=action==='csv-import-replace'?'replace':'add';
+      var fi=document.getElementById('csv-file-input');fi.dataset.mode=mode;fi.value='';fi.click();break;
     }
     case 'csv-export':exportCSV();break;
     case 'csv-export-txns':exportTransactions();break;
     case 'csv-template':exportTemplate();break;
     case 'csv-clear-all':clearAllData();break;
     case 'csv-close-result':csvResult=null;render();break;
+
+    // REPORTS
     case 'rpt-prev':S.rptDate=dateAdd(S.rptDate,-1);render();break;
     case 'rpt-next':S.rptDate=dateAdd(S.rptDate,1);render();break;
     case 'rpt-today':S.rptDate=todayStr();render();break;
+
     case 'dismiss-day-banner':showDayChangeBanner=false;render();break;
   }
 });
 
 document.getElementById('csv-file-input').addEventListener('change',function(e){
-  const file=e.target.files[0];if(!file)return;
-  const mode=this.dataset.mode||'add';
-  const reader=new FileReader();
+  var file=e.target.files[0];if(!file)return;
+  var mode=this.dataset.mode||'add';
+  var reader=new FileReader();
   reader.onload=function(ev){importCSV(ev.target.result,mode);};
   reader.readAsText(file,'UTF-8');
 });
@@ -1138,21 +1184,21 @@ document.getElementById('csv-file-input').addEventListener('change',function(e){
 document.addEventListener('gesturestart',function(e){e.preventDefault();},{passive:false});
 document.addEventListener('gesturechange',function(e){e.preventDefault();},{passive:false});
 document.addEventListener('gestureend',function(e){e.preventDefault();},{passive:false});
-let lastTouchEnd=0;
+var lastTouchEnd=0;
 document.addEventListener('touchend',function(e){
-  const now=Date.now();if(now-lastTouchEnd<=300){e.preventDefault();}lastTouchEnd=now;
+  var now=Date.now();if(now-lastTouchEnd<=300){e.preventDefault();}lastTouchEnd=now;
 },{passive:false});
 
 // ==================== CLOCK ====================
 function updateClock(){
-  const now=new Date();
-  const t=document.getElementById('sidebar-clock-time');
-  const d=document.getElementById('sidebar-clock-date');
+  var now=new Date();
+  var t=document.getElementById('sidebar-clock-time');
+  var d=document.getElementById('sidebar-clock-date');
   if(t)t.textContent=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
-  if(d){const ds=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];const ms=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];d.textContent=ds[now.getDay()]+' '+now.getDate()+' '+ms[now.getMonth()];}
+  if(d){var ds=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];var ms=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];d.textContent=ds[now.getDay()]+' '+now.getDate()+' '+ms[now.getMonth()];}
 }
 function checkDayChange(){
-  const nd=todayStr();
+  var nd=todayStr();
   if(currentDay&&nd!==currentDay){currentDay=nd;if(S.rptDate===dateAdd(nd,-1))S.rptDate=nd;showDayChangeBanner=true;render();}
   else if(!currentDay){currentDay=nd;}
 }
