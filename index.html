@@ -317,6 +317,11 @@ input,select,textarea{user-select:text;-webkit-user-select:text;font-family:inhe
 .txn-item .txn-method.mixed{background:#f5f3ff;color:#6d28d9}
 .txn-item .txn-method.wd{background:#fef3c7;color:#92400e}
 .txn-item .txn-total{font-weight:800;width:70px;text-align:right;flex-shrink:0}
+.txn-item.txn-voided{opacity:.55}
+.txn-item.txn-voided .txn-type,.txn-item.txn-voided .txn-total{text-decoration:line-through}
+.txn-void-badge{font-size:8px;font-weight:800;color:#b91c1c;background:#fee2e2;padding:1px 5px;border-radius:4px;margin-left:4px;vertical-align:middle;letter-spacing:.4px}
+.txn-cancel{flex-shrink:0;border:none;background:transparent;cursor:pointer;font-size:13px;padding:2px 4px;border-radius:5px;line-height:1;opacity:.6;transition:.15s}
+.txn-cancel:hover{opacity:1;background:#fee2e2}
 .donut-wrap{display:flex;align-items:center;justify-content:center;gap:10px;padding:4px 0}
 .donut-legend{font-size:10px;display:flex;flex-direction:column;gap:3px}
 .donut-legend .dl-item{display:flex;align-items:center;gap:4px}
@@ -363,6 +368,9 @@ function timeStr(){var d=new Date();return pad(d.getHours())+':'+pad(d.getMinute
 function pad(n){return String(n).padStart(2,'0');}
 function fmt(n){return '$'+Number(n||0).toFixed(2);}
 function nextId(arr){return arr.length?Math.max.apply(null,arr.map(function(i){return i.id;}))+1:1;}
+// Bugfix #8: ids de transacción monotónicos (evita colisiones de Date.now en el mismo ms)
+var _txnSeq=0;
+function nextTxnId(){var base=Date.now();if(base<=_txnSeq)base=_txnSeq+1;_txnSeq=base;return base;}
 function dateAdd(str,days){var d=new Date(str+'T12:00:00');d.setDate(d.getDate()+days);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
 function dateName(str){
   var d=new Date(str+'T12:00:00');
@@ -439,6 +447,8 @@ var S={
   tpvMode:'browse',selCat:'all',payMethod:'cash',numpad:'',
   manMode:'input',manStep:1,manNumpad:'',manPaid:'',manDesc:'',manMethod:'cash',
   wdMode:'input',wdReason:'basura',wdNumpad:'',
+  // Feature #1: caja / fondo inicial
+  cashNumpad:'',
   dbTab:'categories',dbEditing:null,dbFormName:'',dbFormColor:'#ef4444',
   dbFormCatId:'',dbFormSubId:'',dbPriceNumpad:'',
   rptDate:todayStr(),rptRange:'day',
@@ -458,6 +468,26 @@ var cats=[],subs=[],prods=[],txns=[];
 var COLORS=['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#8b5cf6','#ec4899','#6b7280','#78716c'];
 var LS_KEYS={cats:'tpv_cats',subs:'tpv_subs',prods:'tpv_prods',txns:'tpv_txns'};
 
+// Features #1/#2: clasificadores de transacción (ignoran las canceladas)
+function isSale(t){return(t.type==='sale'||t.type==='manual')&&!t.voided;}
+function isWd(t){return t.type==='withdrawal'&&!t.voided;}
+function isOpening(t){return t.type==='opening'&&!t.voided;}
+// Fondo inicial de caja de un día (última apertura registrada de esa fecha)
+function openingFloatFor(date){
+  return txns.filter(function(t){return isOpening(t)&&t.date===date;}).reduce(function(s,t){return s+t.total;},0);
+}
+// Efectivo real esperado en caja hoy: fondo + ventas en efectivo (incl. parte mixta) - retiros
+function cashInRegisterFor(date){
+  var opening=openingFloatFor(date);
+  var cashIn=txns.filter(function(t){return isSale(t)&&t.date===date;}).reduce(function(s,t){
+    if(t.method==='cash')return s+t.total;
+    if(t.method==='mixed')return s+(t.cashPart||0);
+    return s;
+  },0);
+  var wdOut=txns.filter(function(t){return isWd(t)&&t.date===date;}).reduce(function(s,t){return s+t.total;},0);
+  return opening+cashIn-wdOut;
+}
+
 // Mejora 20: limpieza de transacciones antiguas (> 90 días)
 function pruneOldTxns(){
   var cutoff=dateAdd(todayStr(),-90);
@@ -466,6 +496,15 @@ function pruneOldTxns(){
   if(txns.length<before){
     console.log('TPV: purgadas '+(before-txns.length)+' transacciones antiguas (>90 días)');
   }
+}
+
+// Feature #1: establece (o reemplaza) el fondo inicial del día de hoy
+function setOpeningFloat(amount){
+  var today=todayStr();
+  var existing=txns.filter(function(t){return t.type==='opening'&&t.date===today;});
+  existing.forEach(function(t){t.voided=true;}); // anula aperturas previas del día
+  txns.push({id:nextTxnId(),date:today,time:timeStr(),type:'opening',items:[],total:amount,method:'cash',paid:0,change:0});
+  save();
 }
 
 function save(){
@@ -587,6 +626,13 @@ function patchNumpadDisplay(target,v){
   if(disp){var label=disp.querySelector('.nd-label');disp.innerHTML=(label?label.outerHTML:'')+'$'+(v||'0');}
   var dbDisp=document.querySelector('[data-db-numpad-display]');
   if(target==='dbPriceNumpad'&&dbDisp)dbDisp.textContent=v?'$'+v:'$0';
+  // Feature #1: habilita/actualiza el botón de fondo de caja en vivo
+  if(target==='cashNumpad'){
+    var cashBtn=document.querySelector('[data-action="cash-set-opening"]');
+    if(cashBtn){var camt=parseFloat(v)||0;cashBtn.disabled=camt<=0;
+      var base=cashBtn.textContent.replace(/\s*\$[\d.,]+$/,'');
+      cashBtn.textContent=base+(camt>0?' '+fmt(camt):'');}
+  }
   // Actualiza preview de cambio y botón de cobrar si aplica
   updatePayPreview();
 }
@@ -782,6 +828,7 @@ function _doRender(){
       '</div>'+
       navBtn('tpv','🛒','TPV')+
       navBtn('manual','✏️','Manual')+
+      navBtn('cashbox','🏦','Caja')+
       navBtn('withdrawal','💸','Retiro')+
       navBtn('database','📦','Datos')+
       navBtn('reports','📊','Reportes')+
@@ -789,6 +836,7 @@ function _doRender(){
     '<div class="main">'+
       '<div class="view '+(S.view==='tpv'?'active':'')+'">'+renderTPV()+'</div>'+
       '<div class="view '+(S.view==='manual'?'active':'')+'">'+renderManual()+'</div>'+
+      '<div class="view '+(S.view==='cashbox'?'active':'')+'">'+renderCashbox()+'</div>'+
       '<div class="view '+(S.view==='withdrawal'?'active':'')+'">'+renderWithdrawal()+'</div>'+
       '<div class="view '+(S.view==='database'?'active':'')+'">'+renderDatabase()+'</div>'+
       '<div class="view '+(S.view==='reports'?'active':'')+'">'+renderReports()+'</div>'+
@@ -821,7 +869,7 @@ function renderTPV(){
     '<div class="tpv-left">'+
       '<div class="cat-bar">'+
         '<button class="cat-btn '+(S.selCat==='all'?'active':'')+'" data-action="sel-cat" data-value="all" style="'+(S.selCat==='all'?'background:#6366f1;color:#fff;border-color:#6366f1':'')+'">Todos</button>'+
-        cats.map(function(c){return '<button class="cat-btn '+(S.selCat==c.id?'active':'')+'" data-action="sel-cat" data-value="'+c.id+'" style="'+(S.selCat==c.id?'background:'+c.color+';color:#fff;border-color:'+c.color:'border-color:'+c.color+';color:'+c.color)+'">'+c.name+'</button>';}).join('')+
+        cats.map(function(c){return '<button class="cat-btn '+(S.selCat==c.id?'active':'')+'" data-action="sel-cat" data-value="'+c.id+'" style="'+(S.selCat==c.id?'background:'+c.color+';color:#fff;border-color:'+c.color:'border-color:'+c.color+';color:'+c.color)+'">'+escHTML(c.name)+'</button>';}).join('')+
       '</div>'+
       '<div class="prod-area">'+prodHTML+'</div>'+
     '</div>'+
@@ -831,13 +879,13 @@ function renderTPV(){
 
 function subSection(cat,subName,items){
   var isAll=S.selCat==='all';
-  var label=isAll?'<span class="dot" style="background:'+cat.color+'"></span>'+cat.name+' › '+subName:'<span class="dot" style="background:'+cat.color+'"></span>'+subName;
+  var label=isAll?'<span class="dot" style="background:'+cat.color+'"></span>'+escHTML(cat.name)+' › '+escHTML(subName):'<span class="dot" style="background:'+cat.color+'"></span>'+escHTML(subName);
   return '<div class="sub-header">'+label+'<span class="cnt">'+items.length+'</span></div>'+
   '<div class="prod-grid">'+items.map(function(p){
     var inCart=S.cart.find(function(c){return c.prodId===p.id;});
     return '<div class="prod-card" data-action="add-cart" data-id="'+p.id+'" style="border-color:'+cat.color+'30">'+
       (inCart?'<span class="badge" id="badge-'+p.id+'">'+inCart.qty+'</span>':'')+
-      '<div class="pname">'+p.name+'</div>'+
+      '<div class="pname">'+escHTML(p.name)+'</div>'+
       '<div class="pprice">'+fmt(p.price)+'</div>'+
     '</div>';
   }).join('')+'</div>';
@@ -854,10 +902,9 @@ function renderCart(){
     '<button class="disc-btn '+(S.discountType==='amt'?'active':'')+'" data-action="disc-type" data-value="amt">$ Desc.</button>'+
   '</div>'+
   (S.discountType!=='none'?'<input class="disc-input" id="disc-input" type="number" min="0" placeholder="'+(S.discountType==='pct'?'0–100 %':'Monto')+'" value="'+escHTML(S.discountValue)+'">':'');
-  var discRow=disc>0?'<div class="discount-row"><span class="disc-label">🏷️ Descuento'+(S.discountType==='pct'?' ('+S.discountValue+'%)':'')+' </span><span class="disc-val">-'+fmt(disc)+'</span></div>':'';
   return '<div class="cart-header">🛒 Carrito ('+count+')<span class="clear" data-action="clear-cart">Vaciar</span></div>'+
   '<div class="cart-items">'+S.cart.map(function(i){return '<div class="cart-item">'+
-    '<div class="ci-info"><div class="ci-name">'+i.name+'</div><div class="ci-price">'+fmt(i.price)+'</div></div>'+
+    '<div class="ci-info"><div class="ci-name">'+escHTML(i.name)+'</div><div class="ci-price">'+fmt(i.price)+'</div></div>'+
     '<div class="qty-ctrl">'+
       '<button data-action="cart-minus" data-id="'+i.prodId+'">−</button>'+
       '<span>'+i.qty+'</span>'+
@@ -868,11 +915,26 @@ function renderCart(){
   '</div>';}).join('')+'</div>'+
   '<div class="cart-footer">'+
     discPanel+
-    (disc>0?'<div style="display:flex;justify-content:space-between;font-size:11px;color:#64748b;margin-bottom:2px"><span>Subtotal</span><span>'+fmt(base)+'</span></div>':'')+
-    discRow+
-    '<div class="cart-total"><span>Total</span><span>'+fmt(total)+'</span></div>'+
-    '<button class="btn btn-primary" data-action="go-pay">Cobrar '+fmt(total)+'</button>'+
+    // Bugfix #4: contenedores estables para actualizar el descuento en vivo
+    '<div id="cart-subtotal-live">'+discSubtotalHTML(base,disc)+'</div>'+
+    '<div id="disc-row-live">'+discRowHTML(disc)+'</div>'+
+    '<div class="cart-total"><span>Total</span><span id="cart-total-live">'+fmt(total)+'</span></div>'+
+    '<button class="btn btn-primary" id="cart-pay-btn" data-action="go-pay">Cobrar '+fmt(total)+'</button>'+
   '</div>';
+}
+// Bugfix #4: helpers reutilizables para render inicial y actualización en vivo
+function discSubtotalHTML(base,disc){
+  return disc>0?'<div style="display:flex;justify-content:space-between;font-size:11px;color:#64748b;margin-bottom:2px"><span>Subtotal</span><span>'+fmt(base)+'</span></div>':'';
+}
+function discRowHTML(disc){
+  return disc>0?'<div class="discount-row"><span class="disc-label">🏷️ Descuento'+(S.discountType==='pct'?' ('+escHTML(S.discountValue)+'%)':'')+' </span><span class="disc-val">-'+fmt(disc)+'</span></div>':'';
+}
+function updateDiscountPreview(){
+  var base=getCartBaseTotal();var disc=getDiscount();var total=Math.max(0,base-disc);
+  var subEl=document.getElementById('cart-subtotal-live');if(subEl)subEl.innerHTML=discSubtotalHTML(base,disc);
+  var drEl=document.getElementById('disc-row-live');if(drEl)drEl.innerHTML=discRowHTML(disc);
+  var tEl=document.getElementById('cart-total-live');if(tEl)tEl.textContent=fmt(total);
+  var bEl=document.getElementById('cart-pay-btn');if(bEl)bEl.textContent='Cobrar '+fmt(total);
 }
 
 // ===== TPV PAY =====
@@ -883,8 +945,14 @@ function renderTPVPay(){
 
   // Mejora 5: pago mixto
   if(S.payMethod==='mixed'){
+    // Bugfix #2: la tarjeta se cobra exacta (no puede exceder el total);
+    // el cambio solo puede salir del efectivo sobrante.
     var mc=parseFloat(S.mixedCash)||0;var mcc=parseFloat(S.mixedCard)||0;
-    var mSum=mc+mcc;var mOk=mSum>=total&&mc>=0&&mcc>=0&&mSum>0;
+    var mSum=mc+mcc;
+    var cardOver=mcc>total;
+    var cashNeeded=Math.max(0,total-mcc);
+    var mChange=mc>cashNeeded?Math.round((mc-cashNeeded)*100)/100:0;
+    var mOk=!cardOver&&mc>=cashNeeded&&mSum>0;
     var mRest=total-mc;if(mRest<0)mRest=0;
     return '<div class="panel-h">'+
       '<div class="panel-center"><div class="panel-center-inner">'+
@@ -898,7 +966,7 @@ function renderTPVPay(){
           '<div class="mp-title">Distribución del pago</div>'+
           '<div class="mixed-row"><span class="mr-icon">💵</span><span class="mr-label">Efectivo</span><input id="mixed-cash-input" type="number" min="0" step="any" placeholder="$0.00" value="'+escHTML(S.mixedCash)+'" style="border-color:'+(mc>0?'#10b981':'#e2e8f0')+'"></div>'+
           '<div class="mixed-row"><span class="mr-icon">💳</span><span class="mr-label">Tarjeta</span><input id="mixed-card-input" type="number" min="0" step="any" placeholder="'+(mRest>0?'$'+mRest.toFixed(2):'$0.00')+'" value="'+escHTML(S.mixedCard)+'" style="border-color:'+(mcc>0?'#3b82f6':'#e2e8f0')+'"></div>'+
-          '<div class="mixed-summary"><span>Total ingresado: '+fmt(mSum)+'</span><span class="'+(mOk?'ms-ok':'ms-err')+'">'+(mOk?'✅ OK':mSum>total?'⚠️ Excede '+fmt(mSum-total):'Faltan '+fmt(total-mSum))+'</span></div>'+
+          '<div class="mixed-summary"><span>Total ingresado: '+fmt(mSum)+'</span><span class="'+(mOk?'ms-ok':'ms-err')+'">'+(mOk?(mChange>0?'✅ Cambio '+fmt(mChange):'✅ OK'):cardOver?'⚠️ Tarjeta excede el total':'Faltan '+fmt(cashNeeded-mc))+'</span></div>'+
         '</div>'+
         '<div class="pay-actions" style="max-width:380px;margin:16px auto 0">'+
           '<button class="btn btn-outline" data-action="cancel-pay">Cancelar</button>'+
@@ -1065,6 +1133,37 @@ function renderManualSuccess(){
 }
 
 // ============================================================
+// MÓDULO: CAJA (Feature #1: fondo inicial y efectivo esperado)
+// ============================================================
+function renderCashbox(){
+  var today=todayStr();
+  var opening=openingFloatFor(today);
+  var hasOpening=txns.some(function(t){return isOpening(t)&&t.date===today;});
+  var cashSalesToday=txns.filter(function(t){return isSale(t)&&t.date===today;}).reduce(function(s,t){
+    if(t.method==='cash')return s+t.total;if(t.method==='mixed')return s+(t.cashPart||0);return s;},0);
+  var wdToday=txns.filter(function(t){return isWd(t)&&t.date===today;}).reduce(function(s,t){return s+t.total;},0);
+  var expected=opening+cashSalesToday-wdToday;
+  var amt=parseFloat(S.cashNumpad)||0;
+  return '<div class="panel-h">'+
+    '<div class="panel-left"><div class="panel-left-inner">'+
+      '<div class="section-title"><span class="st-icon">🏦</span> Caja del Día</div>'+
+      '<div class="total-badge" style="margin-bottom:12px"><div class="tb-label">Efectivo esperado en caja</div><div class="tb-amount">'+fmt(expected)+'</div></div>'+
+      '<div style="display:flex;flex-direction:column;gap:2px;font-size:13px;margin-bottom:14px">'+
+        '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e2e8f0"><span>🏦 Fondo inicial</span><b>'+(hasOpening?fmt(opening):'—')+'</b></div>'+
+        '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e2e8f0"><span>💵 Ventas en efectivo</span><b style="color:#10b981">+'+fmt(cashSalesToday)+'</b></div>'+
+        '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e2e8f0"><span>💸 Retiros</span><b style="color:#ef4444">-'+fmt(wdToday)+'</b></div>'+
+        '<div style="display:flex;justify-content:space-between;padding:8px 0;font-weight:800;font-size:15px"><span>= En caja</span><span style="color:#6366f1">'+fmt(expected)+'</span></div>'+
+      '</div>'+
+      '<label class="form-label">'+(hasOpening?'Cambiar fondo inicial':'Fondo inicial de caja')+'</label>'+
+      '<div class="numpad-display active-field" data-numpad-display="cashNumpad"><span class="nd-label">Fondo</span>'+(S.cashNumpad?'$'+S.cashNumpad:'$0')+'</div>'+
+      '<button class="btn btn-primary btn-lg" data-action="cash-set-opening" '+(amt>0?'':'disabled')+' style="margin-top:10px">'+(hasOpening?'Actualizar fondo':'Establecer fondo')+(amt>0?' '+fmt(amt):'')+'</button>'+
+      (!hasOpening?'<div style="margin-top:10px;font-size:11px;color:#94a3b8;text-align:center">Aún no has establecido el fondo de hoy.</div>':'')+
+    '</div></div>'+
+    '<div class="panel-right">'+renderNumpad('cashNumpad')+'</div>'+
+  '</div>';
+}
+
+// ============================================================
 // MÓDULO: WITHDRAWAL
 // ============================================================
 function renderWithdrawal(){
@@ -1132,7 +1231,7 @@ function renderDbCats(){
   '</div>'+
   '<div class="db-list">'+cats.map(function(c){return '<div class="db-item">'+
     '<div class="di-color" style="background:'+c.color+'"></div>'+
-    '<div class="di-name">'+c.name+'</div>'+
+    '<div class="di-name">'+escHTML(c.name)+'</div>'+
     '<div class="di-meta">'+prods.filter(function(p){return p.catId===c.id;}).length+' prod</div>'+
     '<div class="di-actions">'+
       '<button class="edit" data-action="db-edit-cat" data-id="'+c.id+'">✏️</button>'+
@@ -1145,7 +1244,7 @@ function renderDbSubs(){
   return '<div class="db-form">'+
     '<div class="db-form-title">'+(S.dbEditing?'✏️ Editar':'➕ Nueva')+' Subcategoría</div>'+
     '<label class="form-label">Categoría</label>'+
-    '<select class="form-input" id="db-cat-sel">'+cats.map(function(c){return '<option value="'+c.id+'" '+(S.dbFormCatId==c.id?'selected':'')+'>'+c.name+'</option>';}).join('')+'</select>'+
+    '<select class="form-input" id="db-cat-sel">'+cats.map(function(c){return '<option value="'+c.id+'" '+(S.dbFormCatId==c.id?'selected':'')+'>'+escHTML(c.name)+'</option>';}).join('')+'</select>'+
     '<label class="form-label">Nombre</label>'+
     '<input class="form-input" id="db-name" type="text" placeholder="Subcategoría..." value="'+escHTML(S.dbFormName)+'">'+
     '<div style="display:flex;gap:6px">'+
@@ -1157,8 +1256,8 @@ function renderDbSubs(){
     var cat=cats.find(function(c){return c.id===s.catId;});
     return '<div class="db-item">'+
       '<div class="di-color" style="background:'+(cat?cat.color:'#6b7280')+'"></div>'+
-      '<div class="di-name">'+s.name+'</div>'+
-      '<div class="di-meta">'+(cat?cat.name:'—')+'</div>'+
+      '<div class="di-name">'+escHTML(s.name)+'</div>'+
+      '<div class="di-meta">'+(cat?escHTML(cat.name):'—')+'</div>'+
       '<div class="di-actions">'+
         '<button class="edit" data-action="db-edit-sub" data-id="'+s.id+'">✏️</button>'+
         '<button class="del" data-action="db-del-sub" data-id="'+s.id+'">🗑️</button>'+
@@ -1173,12 +1272,12 @@ function renderDbProds(){
     '<div class="db-form-title">'+(S.dbEditing?'✏️ Editar':'➕ Nuevo')+' Producto</div>'+
     '<div class="db-form-row">'+
       '<div class="field"><label class="form-label">Categoría</label>'+
-        '<select class="form-input" id="db-cat-sel">'+cats.map(function(c){return '<option value="'+c.id+'" '+(S.dbFormCatId==c.id?'selected':'')+'>'+c.name+'</option>';}).join('')+'</select>'+
+        '<select class="form-input" id="db-cat-sel">'+cats.map(function(c){return '<option value="'+c.id+'" '+(S.dbFormCatId==c.id?'selected':'')+'>'+escHTML(c.name)+'</option>';}).join('')+'</select>'+
       '</div>'+
       '<div class="field"><label class="form-label">Subcategoría</label>'+
         '<select class="form-input" id="db-sub-sel">'+
           '<option value="">— Ninguna —</option>'+
-          filtSubs.map(function(s){return '<option value="'+s.id+'" '+(S.dbFormSubId==s.id?'selected':'')+'>'+s.name+'</option>';}).join('')+
+          filtSubs.map(function(s){return '<option value="'+s.id+'" '+(S.dbFormSubId==s.id?'selected':'')+'>'+escHTML(s.name)+'</option>';}).join('')+
         '</select>'+
       '</div>'+
     '</div>'+
@@ -1206,8 +1305,8 @@ function renderDbProds(){
     var cat=cats.find(function(c){return c.id===p.catId;});var sub=subs.find(function(s){return s.id===p.subId;});
     return '<div class="db-item">'+
       '<div class="di-color" style="background:'+(cat?cat.color:'#6b7280')+'"></div>'+
-      '<div class="di-name">'+p.name+'</div>'+
-      '<div class="di-meta">'+(cat?cat.name:'')+(sub?' › '+sub.name:'')+' · '+fmt(p.price)+'</div>'+
+      '<div class="di-name">'+escHTML(p.name)+'</div>'+
+      '<div class="di-meta">'+(cat?escHTML(cat.name):'')+(sub?' › '+escHTML(sub.name):'')+' · '+fmt(p.price)+'</div>'+
       '<div class="di-actions">'+
         '<button class="edit" data-action="db-edit-prod" data-id="'+p.id+'">✏️</button>'+
         '<button class="del" data-action="db-del-prod" data-id="'+p.id+'">🗑️</button>'+
@@ -1239,40 +1338,65 @@ function renderReports(){
   }
 
   var rangeTxns=txns.filter(function(t){return dateRange.indexOf(t.date)>-1;});
-  var dayTxns=txns.filter(function(t){return t.date===d;}); // siempre para la vista de transacciones
-  var sales=rangeTxns.filter(function(t){return t.type!=='withdrawal';});
-  var wds=rangeTxns.filter(function(t){return t.type==='withdrawal';});
+  // dayTxns: para la lista (incluye canceladas para mostrarlas tachadas, excluye aperturas de fondo)
+  var dayTxns=txns.filter(function(t){return t.date===d&&t.type!=='opening';});
+  var sales=rangeTxns.filter(isSale);
+  var wds=rangeTxns.filter(isWd);
   var totalSales=sales.reduce(function(s,t){return s+t.total;},0);
-  var cashSales=sales.filter(function(t){return t.method==='cash';}).reduce(function(s,t){return s+t.total;},0);
-  var cardSales=sales.filter(function(t){return t.method==='card';}).reduce(function(s,t){return s+t.total;},0);
+  // Bugfix #1: el efectivo real incluye la parte en efectivo de los pagos mixtos
+  var cashPureSales=sales.filter(function(t){return t.method==='cash';}).reduce(function(s,t){return s+t.total;},0);
+  var cardPureSales=sales.filter(function(t){return t.method==='card';}).reduce(function(s,t){return s+t.total;},0);
   var mixedSales=sales.filter(function(t){return t.method==='mixed';}).reduce(function(s,t){return s+t.total;},0);
+  var mixedCashPart=sales.filter(function(t){return t.method==='mixed';}).reduce(function(s,t){return s+(t.cashPart||0);},0);
+  var mixedCardPart=sales.filter(function(t){return t.method==='mixed';}).reduce(function(s,t){return s+(t.cardPart||0);},0);
+  // Efectivo/tarjeta reales que entraron (contando el desglose de los mixtos)
+  var cashSales=cashPureSales+mixedCashPart;
+  var cardSales=cardPureSales+mixedCardPart;
   var totalWd=wds.reduce(function(s,t){return s+t.total;},0);
-  var cashInRegister=cashSales-totalWd;
+  // Feature #1: sumar el fondo inicial de los días del rango
+  var openingFloat=rangeTxns.filter(isOpening).reduce(function(s,t){return s+t.total;},0);
+  var cashInRegister=openingFloat+cashSales-totalWd;
   var avgTicket=sales.length?totalSales/sales.length:0;
   var itemsSold=sales.reduce(function(s,t){return s+(t.items?t.items.reduce(function(a,i){return a+i.qty;},0):0);},0);
 
-  // Comparativas (solo para vista día)
-  var yDate=dateAdd(d,-1);
-  var yTotal=txns.filter(function(t){return t.date===yDate&&t.type!=='withdrawal';}).reduce(function(s,t){return s+t.total;},0);
+  // Bugfix #5: comparativas contra periodos equivalentes al rango seleccionado
+  function sumSalesForDates(dates){
+    return txns.filter(function(t){return dates.indexOf(t.date)>-1&&isSale(t);}).reduce(function(s,t){return s+t.total;},0);
+  }
+  var prevPeriodDates,prev2PeriodDates,cmpLabel1,cmpLabel2;
+  if(range==='week'){
+    prevPeriodDates=dateRange.map(function(x){return dateAdd(x,-7);});
+    prev2PeriodDates=dateRange.map(function(x){return dateAdd(x,-14);});
+    cmpLabel1='📅 vs Sem Pasada';cmpLabel2='📆 vs 2 Sem';
+  } else if(range==='month'){
+    var prevMonthRef=dateAdd(dateRange[0],-1);
+    prevPeriodDates=getMonthDays(prevMonthRef);
+    prev2PeriodDates=getMonthDays(dateAdd(prevPeriodDates[0],-1));
+    cmpLabel1='📅 vs Mes Pasado';cmpLabel2='📆 vs 2 Meses';
+  } else {
+    prevPeriodDates=[dateAdd(d,-1)];
+    prev2PeriodDates=[dateAdd(d,-7)];
+    cmpLabel1='📅 vs Ayer';cmpLabel2='📆 vs Sem Pasada';
+  }
+  var yTotal=sumSalesForDates(prevPeriodDates);
   var yPct=pctChange(totalSales,yTotal);
-  var lwDate=dateAdd(d,-7);
-  var lwTotal=txns.filter(function(t){return t.date===lwDate&&t.type!=='withdrawal';}).reduce(function(s,t){return s+t.total;},0);
+  var lwTotal=sumSalesForDates(prev2PeriodDates);
   var lwPct=pctChange(totalSales,lwTotal);
 
   // Gráfica por hora (solo día)
-  var hourly={};for(var h=7;h<=22;h++)hourly[h]={total:0,count:0};
-  (range==='day'?sales:sales).filter(function(t){return t.date===d;}).forEach(function(t){var hh=parseInt(t.time?t.time.split(':')[0]:'0');if(hourly[hh]!==undefined){hourly[hh].total+=t.total;hourly[hh].count++;}});
+  var hourly={};for(var h=6;h<=23;h++)hourly[h]={total:0,count:0};
+  sales.filter(function(t){return t.date===d;}).forEach(function(t){var hh=parseInt(t.time?t.time.split(':')[0]:'0');if(hourly[hh]!==undefined){hourly[hh].total+=t.total;hourly[hh].count++;}});
   var maxHourly=Math.max.apply(null,Object.values(hourly).map(function(h){return h.total;}).concat([1]));
-  var peakHour=7;Object.entries(hourly).forEach(function(e){if(e[1].total>hourly[peakHour].total)peakHour=parseInt(e[0]);});
+  var peakHour=6;Object.entries(hourly).forEach(function(e){if(e[1].total>hourly[peakHour].total)peakHour=parseInt(e[0]);});
 
   // Gráfica por semana
   var weekDays=getWeekDays(d);
   var dayLabels=['L','M','X','J','V','S','D'];
-  var weekData=weekDays.map(function(wd){return txns.filter(function(t){return t.date===wd&&t.type!=='withdrawal';}).reduce(function(s,t){return s+t.total;},0);});
+  var weekData=weekDays.map(function(wd){return txns.filter(function(t){return t.date===wd&&isSale(t);}).reduce(function(s,t){return s+t.total;},0);});
   var maxWeek=Math.max.apply(null,weekData.concat([1]));
   var weekTotal=weekData.reduce(function(s,v){return s+v;},0);
   var prevWeekDays=weekDays.map(function(wd){return dateAdd(wd,-7);});
-  var prevWeekTotal=prevWeekDays.map(function(wd){return txns.filter(function(t){return t.date===wd&&t.type!=='withdrawal';}).reduce(function(s,t){return s+t.total;},0);}).reduce(function(s,v){return s+v;},0);
+  var prevWeekTotal=prevWeekDays.map(function(wd){return txns.filter(function(t){return t.date===wd&&isSale(t);}).reduce(function(s,t){return s+t.total;},0);}).reduce(function(s,v){return s+v;},0);
   var weekPct=pctChange(weekTotal,prevWeekTotal);
 
   // Top productos
@@ -1296,9 +1420,9 @@ function renderReports(){
   var prodTotal=sales.filter(function(t){return t.type==='sale';}).reduce(function(s,t){return s+t.total;},0);
   var firstTxn=dayTxns.length?dayTxns[0]:null;
   var lastTxn=dayTxns.length?dayTxns[dayTxns.length-1]:null;
+  // Bugfix #1: cashSales/cardSales ya son el dinero real (efectivo vs tarjeta), suman el total
   var cashPct=totalSales?Math.round(cashSales/totalSales*100):0;
-  var cardPct=totalSales?Math.round(cardSales/totalSales*100):0;
-  var mixedPct=totalSales?100-cashPct-cardPct:0;
+  var cardPct=totalSales?100-cashPct:0;
 
   // Resumen de rango (semana/mes)
   var rangeSummaryHtml='';
@@ -1306,7 +1430,7 @@ function renderReports(){
     var labels=range==='week'?dayLabels:null;
     rangeSummaryHtml='<div class="rpt-range-summary"><div class="rs-title">'+(range==='week'?'📊 Desglose semanal':'📅 Desglose mensual')+'</div><div class="rs-grid">'+
       dateRange.map(function(dd,i){
-        var dv=txns.filter(function(t){return t.date===dd&&t.type!=='withdrawal';}).reduce(function(s,t){return s+t.total;},0);
+        var dv=txns.filter(function(t){return t.date===dd&&isSale(t);}).reduce(function(s,t){return s+t.total;},0);
         var ddObj=new Date(dd+'T12:00:00');
         var lbl=range==='week'?(dayLabels[i]+' '+ddObj.getDate()):(String(ddObj.getDate()));
         return '<div class="rs-item'+(dd===todayStr()?' rs-today':'')+'"><div class="rs-day">'+lbl+'</div><div class="rs-val">'+(dv>0?'$'+Math.round(dv):'—')+'</div></div>';
@@ -1341,8 +1465,8 @@ function renderReports(){
       '</div>'+
       '<div class="rpt-kpis">'+
         '<div class="rpt-kpi"><div class="kpi-label">🎫 Ticket Prom</div><div class="kpi-value">'+fmt(avgTicket)+'</div><div class="kpi-sub">'+itemsSold+' arts</div></div>'+
-        '<div class="rpt-kpi"><div class="kpi-label">📅 vs Ayer</div><div class="kpi-value">'+fmt(yTotal)+'</div><div class="kpi-sub">'+pctLabel(yPct)+'</div></div>'+
-        '<div class="rpt-kpi"><div class="kpi-label">📆 vs Sem Pasada</div><div class="kpi-value">'+fmt(lwTotal)+'</div><div class="kpi-sub">'+pctLabel(lwPct)+'</div></div>'+
+        '<div class="rpt-kpi"><div class="kpi-label">'+cmpLabel1+'</div><div class="kpi-value">'+fmt(yTotal)+'</div><div class="kpi-sub">'+pctLabel(yPct)+'</div></div>'+
+        '<div class="rpt-kpi"><div class="kpi-label">'+cmpLabel2+'</div><div class="kpi-value">'+fmt(lwTotal)+'</div><div class="kpi-sub">'+pctLabel(lwPct)+'</div></div>'+
         '<div class="rpt-kpi"><div class="kpi-label">⭐ Mayor Venta</div><div class="kpi-value">'+(largest?fmt(largest.total):'—')+'</div><div class="kpi-sub">'+(largest?largest.time:'—')+'</div></div>'+
       '</div>'+
       '<div class="rpt-charts">'+
@@ -1366,12 +1490,12 @@ function renderReports(){
           '<div class="insight-title">🏆 Top Productos</div>'+
           (topProds.length?topProds.map(function(p,i){
             var colors=['#f59e0b','#94a3b8','#b45309','#6366f1','#64748b'];
-            return '<div class="top-prod"><div class="rank" style="background:'+colors[i]+'">'+(i+1)+'</div><div class="tp-name">'+p.name+'</div><div class="tp-qty">'+p.qty+'u</div><div class="tp-rev">'+fmt(p.revenue)+'</div></div><div class="progress-bar"><div class="progress-fill" style="width:'+p.qty/maxQty*100+'%;background:'+colors[i]+'"></div></div>';
+            return '<div class="top-prod"><div class="rank" style="background:'+colors[i]+'">'+(i+1)+'</div><div class="tp-name">'+escHTML(p.name)+'</div><div class="tp-qty">'+p.qty+'u</div><div class="tp-rev">'+fmt(p.revenue)+'</div></div><div class="progress-bar"><div class="progress-fill" style="width:'+p.qty/maxQty*100+'%;background:'+colors[i]+'"></div></div>';
           }).join(''):'<div class="empty-state"><span class="es-text">Sin datos</span></div>')+
         '</div>'+
         '<div class="insight-box">'+
           '<div class="insight-title">📁 Por Categoría</div>'+
-          (catData.length?catData.map(function(c){return '<div class="cat-row"><div class="cr-dot" style="background:'+c.color+'"></div><div class="cr-name">'+c.name+'</div><div class="cr-total">'+fmt(c.total)+'</div></div><div class="progress-bar"><div class="progress-fill" style="width:'+c.total/maxCatTotal*100+'%;background:'+c.color+'"></div></div>';}).join(''):'<div class="empty-state"><span class="es-text">Sin datos</span></div>')+
+          (catData.length?catData.map(function(c){return '<div class="cat-row"><div class="cr-dot" style="background:'+c.color+'"></div><div class="cr-name">'+escHTML(c.name)+'</div><div class="cr-total">'+fmt(c.total)+'</div></div><div class="progress-bar"><div class="progress-fill" style="width:'+c.total/maxCatTotal*100+'%;background:'+c.color+'"></div></div>';}).join(''):'<div class="empty-state"><span class="es-text">Sin datos</span></div>')+
         '</div>'+
         '<div class="insight-box">'+
           '<div class="insight-title">📋 Extra</div>'+
@@ -1382,13 +1506,12 @@ function renderReports(){
               '<svg width="50" height="50" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9" fill="none" stroke="#e2e8f0" stroke-width="3"/>'+
               (totalSales>0?
                 '<circle cx="18" cy="18" r="15.9" fill="none" stroke="#10b981" stroke-width="3" stroke-dasharray="'+cashPct+' '+(100-cashPct)+'" stroke-dashoffset="25"/>'+
-                '<circle cx="18" cy="18" r="15.9" fill="none" stroke="#3b82f6" stroke-width="3" stroke-dasharray="'+cardPct+' '+(100-cardPct)+'" stroke-dashoffset="'+(25-cashPct)+'"/>'+
-                (mixedPct>0?'<circle cx="18" cy="18" r="15.9" fill="none" stroke="#8b5cf6" stroke-width="3" stroke-dasharray="'+mixedPct+' '+(100-mixedPct)+'" stroke-dashoffset="'+(25-cashPct-cardPct)+'"/>':''):'')+
+                '<circle cx="18" cy="18" r="15.9" fill="none" stroke="#3b82f6" stroke-width="3" stroke-dasharray="'+cardPct+' '+(100-cardPct)+'" stroke-dashoffset="'+(25-cashPct)+'"/>':'')+
               '</svg>'+
               '<div class="donut-legend">'+
                 '<div class="dl-item"><div class="dl-dot" style="background:#10b981"></div>'+cashPct+'% Ef</div>'+
                 '<div class="dl-item"><div class="dl-dot" style="background:#3b82f6"></div>'+cardPct+'% Tj</div>'+
-                (mixedPct>0?'<div class="dl-item"><div class="dl-dot" style="background:#8b5cf6"></div>'+mixedPct+'% Mx</div>':'')+
+                (mixedSales>0?'<div class="dl-item"><div class="dl-dot" style="background:#8b5cf6"></div>'+fmt(mixedSales)+' Mx</div>':'')+
               '</div>'+
             '</div>'+
           '</div>'+
@@ -1397,11 +1520,19 @@ function renderReports(){
       '<div class="rpt-txns">'+
         '<div class="txn-title">📝 Transacciones '+(range!=='day'?'(día selec.)':'')+' <span style="font-size:10px;color:#94a3b8;font-weight:500">'+(firstTxn?firstTxn.time+' — '+(lastTxn?lastTxn.time:''):'')+' · '+dayTxns.length+' reg</span></div>'+
         '<div class="txn-list">'+(dayTxns.length?dayTxns.map(function(t){
-          var isWd=t.type==='withdrawal';
-          var methodClass=isWd?'wd':t.method;
-          var methodLabel=isWd?'Retiro':t.method==='cash'?'Efvo':t.method==='card'?'Tarj':'Mixto';
-          var desc=isWd?('Retiro: '+t.reason):(t.type==='sale'?(t.items?t.items.map(function(i){return i.name+'×'+i.qty;}).join(', '):'Venta'):'Manual'+(t.description?' - '+t.description:''));
-          return '<div class="txn-item"><div class="txn-time">'+(t.time||'')+'</div><div class="txn-type">'+desc+'</div><span class="txn-method '+methodClass+'">'+methodLabel+'</span><div class="txn-total" style="color:'+(isWd?'#ef4444':'#1e293b')+'">'+(isWd?'-':'')+fmt(t.total)+'</div></div>';
+          var wd=t.type==='withdrawal';
+          var voided=!!t.voided;
+          var methodClass=wd?'wd':t.method;
+          var methodLabel=wd?'Retiro':t.method==='cash'?'Efvo':t.method==='card'?'Tarj':'Mixto';
+          var desc=wd?('Retiro: '+t.reason):(t.type==='sale'?(t.items?t.items.map(function(i){return i.name+'×'+i.qty;}).join(', '):'Venta'):'Manual'+(t.description?' - '+t.description:''));
+          // Feature #2: botón para cancelar (excepto lo ya cancelado)
+          return '<div class="txn-item'+(voided?' txn-voided':'')+'">'+
+            '<div class="txn-time">'+(t.time||'')+'</div>'+
+            '<div class="txn-type">'+escHTML(desc)+(voided?' <span class="txn-void-badge">CANCELADA</span>':'')+'</div>'+
+            '<span class="txn-method '+methodClass+'">'+methodLabel+'</span>'+
+            '<div class="txn-total" style="color:'+(wd?'#ef4444':'#1e293b')+'">'+(wd?'-':'')+fmt(t.total)+'</div>'+
+            (voided?'':'<button class="txn-cancel" data-action="cancel-txn" data-id="'+t.id+'" title="Cancelar">↩️</button>')+
+          '</div>';
         }).join(''):'<div class="empty-state"><span class="es-icon">📝</span><span class="es-text">Sin transacciones</span></div>')+'</div>'+
       '</div>'+
     '</div>'+
@@ -1417,7 +1548,7 @@ function afterRender(){
   var subSel=document.getElementById('db-sub-sel');
   if(subSel)subSel.addEventListener('change',function(){S.dbFormSubId=this.value;});
   var discInput=document.getElementById('disc-input');
-  if(discInput){discInput.addEventListener('input',function(){S.discountValue=this.value;});discInput.focus();}
+  if(discInput){discInput.addEventListener('input',function(){S.discountValue=this.value;updateDiscountPreview();});discInput.focus();}
   var mxCash=document.getElementById('mixed-cash-input');
   if(mxCash)mxCash.addEventListener('input',function(){S.mixedCash=this.value;updateMixedSummary();});
   var mxCard=document.getElementById('mixed-card-input');
@@ -1425,10 +1556,15 @@ function afterRender(){
 }
 
 function updateMixedSummary(){
+  // Bugfix #2: misma lógica que renderTPVPay (tarjeta exacta, cambio solo del efectivo)
   var mc=parseFloat(S.mixedCash)||0;var mcc=parseFloat(S.mixedCard)||0;
-  var total=getCartTotal();var mSum=mc+mcc;var mOk=mSum>=total&&mSum>0;
+  var total=getCartTotal();var mSum=mc+mcc;
+  var cardOver=mcc>total;
+  var cashNeeded=Math.max(0,total-mcc);
+  var mChange=mc>cashNeeded?Math.round((mc-cashNeeded)*100)/100:0;
+  var mOk=!cardOver&&mc>=cashNeeded&&mSum>0;
   var sumEl=document.querySelector('.mixed-summary');
-  if(sumEl){sumEl.innerHTML='<span>Total ingresado: '+fmt(mSum)+'</span><span class="'+(mOk?'ms-ok':'ms-err')+'">'+(mOk?'✅ OK':mSum>total?'⚠️ Excede '+fmt(mSum-total):'Faltan '+fmt(total-mSum))+'</span>';}
+  if(sumEl){sumEl.innerHTML='<span>Total ingresado: '+fmt(mSum)+'</span><span class="'+(mOk?'ms-ok':'ms-err')+'">'+(mOk?(mChange>0?'✅ Cambio '+fmt(mChange):'✅ OK'):cardOver?'⚠️ Tarjeta excede el total':'Faltan '+fmt(cashNeeded-mc))+'</span>';}
   var btn=document.querySelector('[data-action="confirm-pay"]');
   if(btn)btn.disabled=!mOk;
 }
@@ -1447,6 +1583,7 @@ document.addEventListener('click',function(e){
       S.view=value;
       if(value==='manual'){S.manMode='input';S.manStep=1;S.manNumpad='';S.manPaid='';S.manDesc='';S.manMethod='cash';}
       if(value==='withdrawal'){S.wdMode='input';S.wdNumpad='';}
+      if(value==='cashbox'){S.cashNumpad='';}
       renderNow();break;
     case 'sel-cat':S.selCat=value==='all'?'all':parseInt(value);renderNow();break;
 
@@ -1510,15 +1647,16 @@ document.addEventListener('click',function(e){
       } else if(S.payMethod==='card'){
         paid=total;change=0;method='card';
       } else {
-        // Mixto
+        // Mixto (Bugfix #2): tarjeta exacta, el cambio solo sale del efectivo
         var mc2=parseFloat(S.mixedCash)||0;var mcc2=parseFloat(S.mixedCard)||0;
-        if(mc2+mcc2<total)break;
-        paid=mc2+mcc2;change=Math.round((paid-total)*100)/100;method='mixed';
+        var cashNeeded2=Math.max(0,total-mcc2);
+        if(mcc2>total||mc2<cashNeeded2)break;
+        paid=mc2+mcc2;change=Math.round((mc2-cashNeeded2)*100)/100;method='mixed';
       }
       var disc=getDiscount();
       // Bugfix #3: snapshot antes de limpiar carrito
       S.confirmedTotal=total;S.confirmedPaid=paid;S.confirmedChange=change;S.confirmedMethod=method;
-      txns.push({id:Date.now(),date:todayStr(),time:timeStr(),type:'sale',
+      txns.push({id:nextTxnId(),date:todayStr(),time:timeStr(),type:'sale',
         items:S.cart.map(function(i){return{prodId:i.prodId,name:i.name,price:i.price,qty:i.qty,catName:i.catName,catColor:i.catColor};}),
         total:total,method:method,paid:paid,change:change,discount:disc,
         cashPart:method==='mixed'?(parseFloat(S.mixedCash)||0):undefined,
@@ -1526,7 +1664,8 @@ document.addEventListener('click',function(e){
       });
       save();
       S.discountType='none';S.discountValue='';
-      S.tpvMode=method==='cash'?'change':'success';
+      // Bugfix #2: si hay cambio (efectivo o mixto con vuelto) muestra la pantalla de cambio
+      S.tpvMode=(method==='cash'||change>0)?'change':'success';
       toast('✅ Venta registrada · '+fmt(total),'success');
       renderNow();break;
     }
@@ -1539,7 +1678,7 @@ document.addEventListener('click',function(e){
     case 'man-go-card':{
       var amt2=parseFloat(S.manNumpad)||0;if(amt2<=0)break;
       S.manMethod='card';
-      txns.push({id:Date.now(),date:todayStr(),time:timeStr(),type:'manual',items:[],total:amt2,method:'card',paid:amt2,change:0,description:S.manDesc});
+      txns.push({id:nextTxnId(),date:todayStr(),time:timeStr(),type:'manual',items:[],total:amt2,method:'card',paid:amt2,change:0,description:S.manDesc});
       save();S.manMode='success';toast('✅ Cobro registrado · '+fmt(amt2),'success');renderNow();break;
     }
     case 'man-back':S.manStep=1;S.manPaid='';renderNow();break;
@@ -1547,7 +1686,7 @@ document.addEventListener('click',function(e){
     case 'man-confirm-cash':{
       var manTot=parseFloat(S.manNumpad)||0;var manPd=parseFloat(S.manPaid)||0;
       if(manTot<=0||manPd<manTot)break;
-      txns.push({id:Date.now(),date:todayStr(),time:timeStr(),type:'manual',items:[],total:manTot,method:'cash',paid:manPd,change:Math.round((manPd-manTot)*100)/100,description:S.manDesc});
+      txns.push({id:nextTxnId(),date:todayStr(),time:timeStr(),type:'manual',items:[],total:manTot,method:'cash',paid:manPd,change:Math.round((manPd-manTot)*100)/100,description:S.manDesc});
       save();S.manMode='change';toast('✅ Cobro registrado · '+fmt(manTot),'success');renderNow();break;
     }
     case 'man-new':S.manMode='input';S.manStep=1;S.manNumpad='';S.manPaid='';S.manDesc='';renderNow();break;
@@ -1555,10 +1694,24 @@ document.addEventListener('click',function(e){
     case 'wd-reason':S.wdReason=value;renderNow();break;
     case 'wd-confirm':{
       var wdAmt=parseFloat(S.wdNumpad)||0;if(wdAmt<=0)break;
-      txns.push({id:Date.now(),date:todayStr(),time:timeStr(),type:'withdrawal',items:[],total:wdAmt,method:'cash',paid:0,change:0,reason:S.wdReason});
+      txns.push({id:nextTxnId(),date:todayStr(),time:timeStr(),type:'withdrawal',items:[],total:wdAmt,method:'cash',paid:0,change:0,reason:S.wdReason});
       save();S.wdMode='success';toast('💸 Retiro registrado · '+fmt(wdAmt),'warning');renderNow();break;
     }
     case 'wd-new':S.wdMode='input';S.wdNumpad='';renderNow();break;
+
+    // Feature #1: establecer fondo de caja
+    case 'cash-set-opening':{
+      var fondo=parseFloat(S.cashNumpad)||0;if(fondo<=0)break;
+      setOpeningFloat(fondo);S.cashNumpad='';toast('🏦 Fondo de caja: '+fmt(fondo),'success');renderNow();break;
+    }
+
+    // Feature #2: cancelar (anular) una transacción registrada
+    case 'cancel-txn':{
+      if(!confirm('¿Cancelar esta transacción? No se borra, queda marcada como anulada.'))break;
+      var ct=txns.find(function(t){return t.id===id;});
+      if(ct&&!ct.voided){ct.voided=true;save();toast('↩️ Transacción cancelada','warning');}
+      renderNow();break;
+    }
 
     case 'numpad':numpadPress(target,value);break;
 
@@ -1572,7 +1725,7 @@ document.addEventListener('click',function(e){
       save();S.dbEditing=null;S.dbFormName='';toast('📁 Categoría guardada','info');renderNow();break;
     }
     case 'db-edit-cat':{var ec2=cats.find(function(x){return x.id===id;});if(ec2){S.dbEditing=ec2.id;S.dbFormName=ec2.name;S.dbFormColor=ec2.color;}renderNow();break;}
-    case 'db-del-cat':{if(!confirm('¿Eliminar categoría y sus productos?'))break;cats=cats.filter(function(c){return c.id!==id;});subs=subs.filter(function(s){return s.catId!==id;});prods=prods.filter(function(p){return p.catId!==id;});save();toast('🗑️ Categoría eliminada','warning');renderNow();break;}
+    case 'db-del-cat':{if(!confirm('¿Eliminar categoría y sus productos?'))break;cats=cats.filter(function(c){return c.id!==id;});subs=subs.filter(function(s){return s.catId!==id;});prods=prods.filter(function(p){return p.catId!==id;});S.cart=S.cart.filter(function(c){return prods.find(function(p){return p.id===c.prodId;});});save();toast('🗑️ Categoría eliminada','warning');renderNow();break;}
     case 'db-save-sub':{
       var sname=(document.getElementById('db-name')||{}).value||'';
       var scatId=parseInt((document.getElementById('db-cat-sel')||{}).value)||0;
@@ -1661,6 +1814,8 @@ setInterval(checkDayChange,10000);
 // INIT
 // ============================================================
 load();
+// Bugfix #8: seed del contador de ids con el mayor id existente
+txns.forEach(function(t){if(t.id&&t.id>_txnSeq)_txnSeq=t.id;});
 pruneOldTxns(); // Mejora 20: purgar al arrancar
 // Si no hay catálogo, o sigue siendo el demo genérico, carga el catálogo real
 var _isOldDemo=cats.length>0&&cats.some(function(c){return c.name==='Comida'||c.name==='Snacks'||c.name==='Postres';});
