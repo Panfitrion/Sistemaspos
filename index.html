@@ -122,6 +122,16 @@ input,select,textarea{user-select:text;-webkit-user-select:text;font-family:inhe
 .numpad-display{background:#f1f5f9;border-radius:10px;padding:10px;text-align:right;font-size:24px;font-weight:800;margin-bottom:8px;min-height:44px;display:flex;align-items:center;justify-content:flex-end;color:#1e293b;border:2px solid transparent;transition:.2s}
 .numpad-display.active-field{border-color:#6366f1;background:#eef2ff}
 .numpad-display .nd-label{font-size:10px;color:#94a3b8;font-weight:600;margin-right:auto;text-transform:uppercase}
+.numpad-display.tap{cursor:pointer}
+.numpad-display.tap:active{transform:scale(.99)}
+.pad-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);z-index:9998;display:flex;align-items:center;justify-content:center;animation:padFade .15s;padding:16px}
+@keyframes padFade{from{opacity:0}to{opacity:1}}
+.pad-modal{background:#fff;border-radius:16px;padding:16px;width:300px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,.4);animation:padIn .18s}
+@keyframes padIn{from{transform:translateY(12px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+.pad-modal-title{font-size:14px;font-weight:800;color:#1e293b;margin-bottom:10px;text-align:center}
+.pad-modal .numpad{margin-top:6px}
+.pad-modal-actions{display:flex;gap:8px;margin-top:12px}
+.pad-modal-actions .btn{flex:1}
 .numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
 .numpad button{padding:14px 8px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;font-size:20px;font-weight:700;cursor:pointer;transition:.1s}
 .numpad button:active{background:#6366f1;color:#fff;transform:scale(.95)}
@@ -457,6 +467,8 @@ var S={
   discountType:'none',discountValue:'',
   // Mejora 5: pago mixto
   mixedCash:'',mixedCard:'',
+  // Numpad modal (sin teclado de Apple): entrada numérica in-app para cualquier campo
+  padOpen:false,padTarget:'',padTitle:'',padPrefix:'$',padValue:'',
   // Bugfix #3: snapshot de totales al confirmar
   confirmedTotal:0,confirmedPaid:0,confirmedChange:0,confirmedMethod:'cash',
 };
@@ -623,7 +635,7 @@ function numpadPress(target,key){
 function patchNumpadDisplay(target,v){
   // Actualiza displays
   var disp=document.querySelector('[data-numpad-display="'+target+'"]');
-  if(disp){var label=disp.querySelector('.nd-label');disp.innerHTML=(label?label.outerHTML:'')+'$'+(v||'0');}
+  if(disp){var label=disp.querySelector('.nd-label');var pfx=(target==='padValue'?(S.padPrefix||''):'$');disp.innerHTML=(label?label.outerHTML:'')+pfx+(v||'0');}
   var dbDisp=document.querySelector('[data-db-numpad-display]');
   if(target==='dbPriceNumpad'&&dbDisp)dbDisp.textContent=v?'$'+v:'$0';
   // Feature #1: habilita/actualiza el botón de fondo de caja en vivo
@@ -677,6 +689,28 @@ function renderNumpad(target){
   '</div>';
 }
 
+// Numpad modal reutilizable: entrada numérica in-app (nunca el teclado de Apple)
+function renderPadModal(){
+  if(!S.padOpen)return '';
+  var pref=S.padPrefix||'';
+  return '<div class="pad-overlay" data-action="pad-cancel">'+
+    '<div class="pad-modal" data-action="noop">'+
+      '<div class="pad-modal-title">'+escHTML(S.padTitle||'Cantidad')+'</div>'+
+      '<div class="numpad-display active-field" data-numpad-display="padValue">'+pref+(S.padValue||'0')+'</div>'+
+      renderNumpad('padValue')+
+      '<div class="pad-modal-actions">'+
+        '<button class="btn btn-outline" data-action="pad-cancel">Cancelar</button>'+
+        '<button class="btn btn-success" data-action="pad-confirm">Aceptar</button>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+// Abre el modal para editar un campo numérico de S
+function openPad(targetKey,title,prefix){
+  S.padTarget=targetKey;S.padTitle=title||'Cantidad';S.padPrefix=(prefix!==undefined?prefix:'$');
+  S.padValue=String(S[targetKey]||'');S.padOpen=true;renderNow();
+}
+
 // ============================================================
 // MÓDULO: PRESERVAR INPUTS (Mejora 18: debounce)
 // ============================================================
@@ -685,9 +719,7 @@ function preserveInputs(){
   // Lee inmediatamente (sin debounce) para no perder nada
   var el1=document.getElementById('man-desc');if(el1)S.manDesc=el1.value;
   var el2=document.getElementById('db-name');if(el2)S.dbFormName=el2.value;
-  var el3=document.getElementById('disc-input');if(el3)S.discountValue=el3.value;
-  var el4=document.getElementById('mixed-cash-input');if(el4)S.mixedCash=el4.value;
-  var el5=document.getElementById('mixed-card-input');if(el5)S.mixedCard=el5.value;
+  // disc/mixto ahora usan el numpad modal (sin teclado de Apple), ya no hay inputs que preservar
 }
 
 // ============================================================
@@ -840,7 +872,8 @@ function _doRender(){
       '<div class="view '+(S.view==='withdrawal'?'active':'')+'">'+renderWithdrawal()+'</div>'+
       '<div class="view '+(S.view==='database'?'active':'')+'">'+renderDatabase()+'</div>'+
       '<div class="view '+(S.view==='reports'?'active':'')+'">'+renderReports()+'</div>'+
-    '</div>';
+    '</div>'+
+    renderPadModal();
   afterRender();
 }
 
@@ -901,7 +934,12 @@ function renderCart(){
     '<button class="disc-btn '+(S.discountType==='pct'?'active':'')+'" data-action="disc-type" data-value="pct">% Desc.</button>'+
     '<button class="disc-btn '+(S.discountType==='amt'?'active':'')+'" data-action="disc-type" data-value="amt">$ Desc.</button>'+
   '</div>'+
-  (S.discountType!=='none'?'<input class="disc-input" id="disc-input" type="number" min="0" placeholder="'+(S.discountType==='pct'?'0–100 %':'Monto')+'" value="'+escHTML(S.discountValue)+'">':'');
+  (S.discountType!=='none'?(function(){
+    var isPct=S.discountType==='pct';
+    var has=S.discountValue!==''&&S.discountValue!=null;
+    var shown=has?(isPct?S.discountValue+' %':'$'+S.discountValue):(isPct?'Tocar para % desc.':'Tocar para monto');
+    return '<div class="numpad-display tap" data-action="disc-open" style="font-size:18px;'+(has?'':'color:#94a3b8')+'"><span class="nd-label">Descuento</span>'+escHTML(shown)+'</div>';
+  })():'');
   return '<div class="cart-header">🛒 Carrito ('+count+')<span class="clear" data-action="clear-cart">Vaciar</span></div>'+
   '<div class="cart-items">'+S.cart.map(function(i){return '<div class="cart-item">'+
     '<div class="ci-info"><div class="ci-name">'+escHTML(i.name)+'</div><div class="ci-price">'+fmt(i.price)+'</div></div>'+
@@ -964,8 +1002,8 @@ function renderTPVPay(){
         '</div>'+
         '<div class="mixed-pay-section" style="max-width:380px;margin:0 auto">'+
           '<div class="mp-title">Distribución del pago</div>'+
-          '<div class="mixed-row"><span class="mr-icon">💵</span><span class="mr-label">Efectivo</span><input id="mixed-cash-input" type="number" min="0" step="any" placeholder="$0.00" value="'+escHTML(S.mixedCash)+'" style="border-color:'+(mc>0?'#10b981':'#e2e8f0')+'"></div>'+
-          '<div class="mixed-row"><span class="mr-icon">💳</span><span class="mr-label">Tarjeta</span><input id="mixed-card-input" type="number" min="0" step="any" placeholder="'+(mRest>0?'$'+mRest.toFixed(2):'$0.00')+'" value="'+escHTML(S.mixedCard)+'" style="border-color:'+(mcc>0?'#3b82f6':'#e2e8f0')+'"></div>'+
+          '<div class="mixed-row"><span class="mr-icon">💵</span><span class="mr-label">Efectivo</span><div class="numpad-display tap" data-action="mix-open" data-value="cash" style="flex:1;font-size:18px;'+(mc>0?'border-color:#10b981':'color:#94a3b8')+'">'+(S.mixedCash!==''?'$'+S.mixedCash:'$0.00')+'</div></div>'+
+          '<div class="mixed-row"><span class="mr-icon">💳</span><span class="mr-label">Tarjeta</span><div class="numpad-display tap" data-action="mix-open" data-value="card" style="flex:1;font-size:18px;'+(mcc>0?'border-color:#3b82f6':'color:#94a3b8')+'">'+(S.mixedCard!==''?'$'+S.mixedCard:(mRest>0?'$'+mRest.toFixed(2):'$0.00'))+'</div></div>'+
           '<div class="mixed-summary"><span>Total ingresado: '+fmt(mSum)+'</span><span class="'+(mOk?'ms-ok':'ms-err')+'">'+(mOk?(mChange>0?'✅ Cambio '+fmt(mChange):'✅ OK'):cardOver?'⚠️ Tarjeta excede el total':'Faltan '+fmt(cashNeeded-mc))+'</span></div>'+
         '</div>'+
         '<div class="pay-actions" style="max-width:380px;margin:16px auto 0">'+
@@ -1547,12 +1585,7 @@ function afterRender(){
   if(catSel)catSel.addEventListener('change',function(){S.dbFormCatId=this.value;S.dbFormSubId='';renderNow();});
   var subSel=document.getElementById('db-sub-sel');
   if(subSel)subSel.addEventListener('change',function(){S.dbFormSubId=this.value;});
-  var discInput=document.getElementById('disc-input');
-  if(discInput){discInput.addEventListener('input',function(){S.discountValue=this.value;updateDiscountPreview();});discInput.focus();}
-  var mxCash=document.getElementById('mixed-cash-input');
-  if(mxCash)mxCash.addEventListener('input',function(){S.mixedCash=this.value;updateMixedSummary();});
-  var mxCard=document.getElementById('mixed-card-input');
-  if(mxCard)mxCard.addEventListener('input',function(){S.mixedCard=this.value;updateMixedSummary();});
+  // Descuento y pago mixto ahora se editan con el numpad modal (data-action disc-open / mix-open)
 }
 
 function updateMixedSummary(){
@@ -1628,6 +1661,18 @@ document.addEventListener('click',function(e){
       S.discountType=value;
       if(value==='none')S.discountValue='';
       renderNow();break;
+
+    // Numpad modal: entrada numérica sin teclado de Apple
+    case 'disc-open':
+      openPad('discountValue',S.discountType==='pct'?'Descuento (%)':'Descuento ($)',S.discountType==='pct'?'':'$');break;
+    case 'mix-open':
+      openPad(value==='card'?'mixedCard':'mixedCash',value==='card'?'Pago con tarjeta':'Pago en efectivo','$');break;
+    case 'pad-confirm':
+      if(S.padTarget)S[S.padTarget]=S.padValue;
+      S.padOpen=false;S.padTarget='';renderNow();break;
+    case 'pad-cancel':
+      S.padOpen=false;S.padTarget='';renderNow();break;
+    case 'noop':break;
 
     case 'go-pay':
       if(S.cart.length){S.tpvMode='pay';S.numpad='';S.payMethod='cash';S.mixedCash='';S.mixedCard='';renderNow();}
