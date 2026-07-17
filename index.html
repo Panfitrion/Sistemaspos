@@ -484,20 +484,59 @@ var LS_KEYS={cats:'tpv_cats',subs:'tpv_subs',prods:'tpv_prods',txns:'tpv_txns'};
 function isSale(t){return(t.type==='sale'||t.type==='manual')&&!t.voided;}
 function isWd(t){return t.type==='withdrawal'&&!t.voided;}
 function isOpening(t){return t.type==='opening'&&!t.voided;}
-// Fondo inicial de caja de un día (última apertura registrada de esa fecha)
-function openingFloatFor(date){
-  return txns.filter(function(t){return isOpening(t)&&t.date===date;}).reduce(function(s,t){return s+t.total;},0);
-}
-// Efectivo real esperado en caja hoy: fondo + ventas en efectivo (incl. parte mixta) - retiros
-function cashInRegisterFor(date){
-  var opening=openingFloatFor(date);
-  var cashIn=txns.filter(function(t){return isSale(t)&&t.date===date;}).reduce(function(s,t){
+// ---- Caja con ARRASTRE automático ----------------------------------------
+// Como en la mañana no se hace el corte, el efectivo físico de anoche sigue en
+// el cajón: el fondo de hoy = cierre del último día con actividad. El "corte"
+// (fondo manual) solo se registra cuando de verdad cuentas/retiras el dinero.
+function cashSalesFor(date){
+  return txns.filter(function(t){return isSale(t)&&t.date===date;}).reduce(function(s,t){
     if(t.method==='cash')return s+t.total;
     if(t.method==='mixed')return s+(t.cashPart||0);
     return s;
   },0);
-  var wdOut=txns.filter(function(t){return isWd(t)&&t.date===date;}).reduce(function(s,t){return s+t.total;},0);
-  return opening+cashIn-wdOut;
+}
+function wdFor(date){
+  return txns.filter(function(t){return isWd(t)&&t.date===date;}).reduce(function(s,t){return s+t.total;},0);
+}
+// Fondo manual (corte) registrado ese día, o null si no hay
+function explicitOpeningFor(date){
+  var os=txns.filter(function(t){return isOpening(t)&&t.date===date;});
+  return os.length?os.reduce(function(s,t){return s+t.total;},0):null;
+}
+// Días (asc) con cualquier movimiento de caja
+function activeDaysAsc(){
+  var set={};
+  txns.forEach(function(t){if(!t.voided&&(t.type==='sale'||t.type==='manual'||t.type==='withdrawal'||t.type==='opening'))set[t.date]=1;});
+  return Object.keys(set).sort();
+}
+// Cierre de efectivo por día encadenando el arrastre de la noche anterior
+function closingByDay(){
+  var days=activeDaysAsc();var map={};var prev=0;
+  days.forEach(function(d){
+    var man=explicitOpeningFor(d);
+    var open=(man!=null)?man:prev;
+    var close=open+cashSalesFor(d)-wdFor(d);
+    map[d]={open:open,close:close,manual:man!=null,carry:(man!=null?0:prev)};
+    prev=close;
+  });
+  return map;
+}
+// Efectivo que "viene de anoche": cierre del último día activo anterior a date
+function carryoverInto(date){
+  var days=activeDaysAsc();var map=closingByDay();var carry=0;
+  for(var i=0;i<days.length;i++){if(days[i]<date)carry=map[days[i]].close;else break;}
+  return carry;
+}
+// Fondo efectivo del día: corte manual si existe, si no el arrastre de anoche
+function effectiveOpeningFor(date){
+  var man=explicitOpeningFor(date);
+  return (man!=null)?man:carryoverInto(date);
+}
+// Compatibilidad con el resto del código
+function openingFloatFor(date){return effectiveOpeningFor(date);}
+// Efectivo esperado en caja: fondo (arrastre o corte) + ventas efectivo - retiros
+function cashInRegisterFor(date){
+  return effectiveOpeningFor(date)+cashSalesFor(date)-wdFor(date);
 }
 
 // Mejora 20: limpieza de transacciones antiguas (> 90 días)
@@ -1175,27 +1214,34 @@ function renderManualSuccess(){
 // ============================================================
 function renderCashbox(){
   var today=todayStr();
-  var opening=openingFloatFor(today);
-  var hasOpening=txns.some(function(t){return isOpening(t)&&t.date===today;});
-  var cashSalesToday=txns.filter(function(t){return isSale(t)&&t.date===today;}).reduce(function(s,t){
-    if(t.method==='cash')return s+t.total;if(t.method==='mixed')return s+(t.cashPart||0);return s;},0);
-  var wdToday=txns.filter(function(t){return isWd(t)&&t.date===today;}).reduce(function(s,t){return s+t.total;},0);
+  var manual=explicitOpeningFor(today);           // corte manual de hoy (o null)
+  var hasCut=manual!=null;
+  var carry=carryoverInto(today);                 // lo que quedó de anoche
+  var opening=hasCut?manual:carry;                // fondo efectivo de hoy
+  var cashSalesToday=cashSalesFor(today);
+  var wdToday=wdFor(today);
   var expected=opening+cashSalesToday-wdToday;
   var amt=parseFloat(S.cashNumpad)||0;
+  // Etiqueta de origen del fondo
+  var fondoRow=hasCut
+    ? '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e2e8f0"><span>✂️ Fondo (corte de hoy)</span><b>'+fmt(manual)+'</b></div>'
+    : '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e2e8f0"><span>🌙 Viene de anoche</span><b>'+fmt(carry)+'</b></div>';
   return '<div class="panel-h">'+
     '<div class="panel-left"><div class="panel-left-inner">'+
       '<div class="section-title"><span class="st-icon">🏦</span> Caja del Día</div>'+
       '<div class="total-badge" style="margin-bottom:12px"><div class="tb-label">Efectivo esperado en caja</div><div class="tb-amount">'+fmt(expected)+'</div></div>'+
-      '<div style="display:flex;flex-direction:column;gap:2px;font-size:13px;margin-bottom:14px">'+
-        '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e2e8f0"><span>🏦 Fondo inicial</span><b>'+(hasOpening?fmt(opening):'—')+'</b></div>'+
+      '<div style="display:flex;flex-direction:column;gap:2px;font-size:13px;margin-bottom:10px">'+
+        fondoRow+
         '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e2e8f0"><span>💵 Ventas en efectivo</span><b style="color:#10b981">+'+fmt(cashSalesToday)+'</b></div>'+
         '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e2e8f0"><span>💸 Retiros</span><b style="color:#ef4444">-'+fmt(wdToday)+'</b></div>'+
         '<div style="display:flex;justify-content:space-between;padding:8px 0;font-weight:800;font-size:15px"><span>= En caja</span><span style="color:#6366f1">'+fmt(expected)+'</span></div>'+
       '</div>'+
-      '<label class="form-label">'+(hasOpening?'Cambiar fondo inicial':'Fondo inicial de caja')+'</label>'+
-      '<div class="numpad-display active-field" data-numpad-display="cashNumpad"><span class="nd-label">Fondo</span>'+(S.cashNumpad?'$'+S.cashNumpad:'$0')+'</div>'+
-      '<button class="btn btn-primary btn-lg" data-action="cash-set-opening" '+(amt>0?'':'disabled')+' style="margin-top:10px">'+(hasOpening?'Actualizar fondo':'Establecer fondo')+(amt>0?' '+fmt(amt):'')+'</button>'+
-      (!hasOpening?'<div style="margin-top:10px;font-size:11px;color:#94a3b8;text-align:center">Aún no has establecido el fondo de hoy.</div>':'')+
+      (hasCut
+        ? '<div style="font-size:11px;color:#94a3b8;margin-bottom:8px">Hoy hiciste un corte: el fondo se fijó manualmente en '+fmt(manual)+'. <a data-action="cash-undo-cut" style="color:#6366f1;font-weight:700;cursor:pointer">Deshacer y volver al arrastre</a></div>'
+        : '<div style="font-size:11px;color:#94a3b8;margin-bottom:8px">El fondo se arrastra solo desde anoche. Usa el corte solo si cuentas o retiras el efectivo real del cajón.</div>')+
+      '<label class="form-label">✂️ Corte de caja — efectivo contado</label>'+
+      '<div class="numpad-display active-field" data-numpad-display="cashNumpad"><span class="nd-label">Contado</span>'+(S.cashNumpad?'$'+S.cashNumpad:'$0')+'</div>'+
+      '<button class="btn btn-primary btn-lg" data-action="cash-set-opening" '+(amt>0?'':'disabled')+' style="margin-top:10px">'+(hasCut?'Actualizar corte':'Registrar corte')+(amt>0?' '+fmt(amt):'')+'</button>'+
     '</div></div>'+
     '<div class="panel-right">'+renderNumpad('cashNumpad')+'</div>'+
   '</div>';
@@ -1391,9 +1437,8 @@ function renderReports(){
   var cashSales=cashPureSales+mixedCashPart;
   var cardSales=cardPureSales+mixedCardPart;
   var totalWd=wds.reduce(function(s,t){return s+t.total;},0);
-  // Feature #1: sumar el fondo inicial de los días del rango
-  var openingFloat=rangeTxns.filter(isOpening).reduce(function(s,t){return s+t.total;},0);
-  var cashInRegister=openingFloat+cashSales-totalWd;
+  // Efectivo físico en el cajón del día seleccionado (con arrastre de anoche)
+  var cashInRegister=cashInRegisterFor(d);
   var avgTicket=sales.length?totalSales/sales.length:0;
   var itemsSold=sales.reduce(function(s,t){return s+(t.items?t.items.reduce(function(a,i){return a+i.qty;},0):0);},0);
 
@@ -1744,10 +1789,15 @@ document.addEventListener('click',function(e){
     }
     case 'wd-new':S.wdMode='input';S.wdNumpad='';renderNow();break;
 
-    // Feature #1: establecer fondo de caja
+    // Feature #1: corte de caja (fija el efectivo contado como fondo del día)
     case 'cash-set-opening':{
-      var fondo=parseFloat(S.cashNumpad)||0;if(fondo<=0)break;
-      setOpeningFloat(fondo);S.cashNumpad='';toast('🏦 Fondo de caja: '+fmt(fondo),'success');renderNow();break;
+      var fondo=parseFloat(S.cashNumpad)||0;if(fondo<0)break;
+      setOpeningFloat(fondo);S.cashNumpad='';toast('✂️ Corte registrado · '+fmt(fondo),'success');renderNow();break;
+    }
+    // Deshacer el corte manual de hoy y volver al arrastre automático de anoche
+    case 'cash-undo-cut':{
+      txns.filter(function(t){return t.type==='opening'&&t.date===todayStr();}).forEach(function(t){t.voided=true;});
+      save();toast('🌙 Fondo vuelve al arrastre de anoche','info');renderNow();break;
     }
 
     // Feature #2: cancelar (anular) una transacción registrada
